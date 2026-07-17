@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - DR Deficiency Management{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Dashboard</h2>
+        <p class="text-muted mb-0">Overview of deficiency management system</p>
+    </div>
+    <a href="{{ url_for('new_deficiency') }}" class="btn btn-primary">
+        <span class="material-icons-round">add_circle</span>
+        New Deficiency
+    </a>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons-round">folder_open</span>
+            </div>
+            <div class="stat-value">{{ status_counts|sum(attribute='count') }}</div>
+            <div class="stat-label">Total Deficiencies</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fef3c7;">
+                <span class="material-icons-round" style="color: #92400e;">error_outline</span>
+            </div>
+            <div class="stat-value">
+                {{ status_counts|selectattr('status', 'equalto', 'OPEN')|map(attribute='count')|first or 0 }}
+            </div>
+            <div class="stat-label">Open Items</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dbeafe;">
+                <span class="material-icons-round" style="color: #1e40af;">build</span>
+            </div>
+            <div class="stat-value">
+                {{ status_counts|selectattr('status', 'equalto', 'In Work')|map(attribute='count')|first or 0 }}
+            </div>
+            <div class="stat-label">In Work</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #d1fae5;">
+                <span class="material-icons-round" style="color: #065f46;">check_circle</span>
+            </div>
+            <div class="stat-value">
+                {{ status_counts|selectattr('status', 'equalto', 'Cleared')|map(attribute='count')|first or 0 }}
+            </div>
+            <div class="stat-label">Cleared</div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Breakdown -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <span class="material-icons-round">pie_chart</span>
+                Status Breakdown
+            </div>
+            <div class="card-body">
+                {% for stat in status_counts %}
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <span class="badge status-{{ stat.status|replace(' ', '') }} me-2">{{ stat.status }}</span>
+                    </div>
+                    <span class="badge bg-secondary">{{ stat.count }}</span>
+                </div>
+                {% set total = status_counts|sum(attribute='count') %}
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-info" style="width: {{ (stat.count / total * 100)|round }}%"></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <span class="material-icons-round">warning</span>
+                Severity Breakdown
+            </div>
+            <div class="card-body">
+                {% for sev in severity_counts %}
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <span class="badge severity-{{ sev.severity }} me-2">{{ sev.severity }}</span>
+                        {% if sev.severity == 'A' %}
+                        <span class="text-muted small">Critical</span>
+                        {% elif sev.severity == 'B' %}
+                        <span class="text-muted small">High</span>
+                        {% elif sev.severity == 'C' %}
+                        <span class="text-muted small">Medium</span>
+                        {% elif sev.severity == 'D' %}
+                        <span class="text-muted small">Low</span>
+                        {% endif %}
+                    </div>
+                    <span class="badge bg-secondary">{{ sev.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Deficiencies -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <span class="material-icons-round">history</span>
+            Recent Deficiencies
+        </div>
+        <a href="{{ url_for('list_deficiencies') }}" class="btn btn-sm btn-outline-primary">
+            View All
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-custom table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>DR #</th>
+                        <th>Site</th>
+                        <th>Resource</th>
+                        <th>Issue</th>
+                        <th>Status</th>
+                        <th>Severity</th>
+                        <th>Raised By</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for def in recent_deficiencies %}
+                    <tr>
+                        <td><strong>{{ def.deficiencynumber }}</strong></td>
+                        <td>{{ def.sitename }}</td>
+                        <td>{{ def.resource }}</td>
+                        <td>
+                            {% if def.issue_description %}
+                                {% set desc = def.issue_description %}
+                                {% if desc|length > 50 %}
+                                    {{ desc[:50] }}...
+                                {% else %}
+                                    {{ desc }}
+                                {% endif %}
+                            {% else %}
+                                <em class="text-muted">No description</em>
+                            {% endif %}
+                        </td>
+                        <td><span class="badge status-{{ def.status|replace(' ', '') }}">{{ def.status }}</span></td>
+                        <td><span class="badge severity-{{ def.severity }}">{{ def.severity }}</span></td>
+                        <td>{{ def.raisedbyname }}</td>
+                        <td>
+                            <a href="{{ url_for('view_deficiency', deficiency_number=def.deficiencynumber) }}"
+                               class="btn btn-sm btn-outline-primary">
+                                <span class="material-icons-round" style="font-size:16px;">visibility</span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <span class="material-icons-round">inbox</span>
+                                <p class="mb-0">No deficiencies found.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

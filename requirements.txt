@@ -1,0 +1,15 @@
+# DR Deficiency Management System - Web Application
+# Python dependencies
+
+# Web Framework
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# Database
+psycopg2-binary==2.9.9
+
+# Form Handling
+Flask-WTF==1.2.1
+
+# Security
+WTForms==3.1.1

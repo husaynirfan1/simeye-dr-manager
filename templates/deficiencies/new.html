@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Deficiency{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('list_deficiencies') }}">Deficiencies</a></li>
+        <li class="breadcrumb-item active">New Deficiency</li>
+    </ol>
+</nav>
+
+<!-- Reserved DR Number Alert -->
+{% if next_dr_number %}
+<div class="alert alert-info d-flex align-items-center" role="alert">
+    <span class="material-icons-round me-2">info</span>
+    <div>
+        <strong>Reserved DR Number: #{{ next_dr_number }}</strong><br>
+        <small>This number will be assigned when you click "Create Deficiency"</small>
+    </div>
+</div>
+{% endif %}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Create New Deficiency</h2>
+        <p class="text-muted mb-0">Fill in the details below to create a new deficiency record</p>
+    </div>
+    <a href="{{ url_for('list_deficiencies') }}" class="btn btn-outline-secondary">
+        <span class="material-icons-round" style="font-size:18px;">arrow_back</span>
+        Cancel
+    </a>
+</div>
+
+<form method="POST" action="{{ url_for('new_deficiency', reserved_dr=next_dr_number) }}">
+    <!-- CSRF Token -->
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- Hidden field for DR number -->
+    <input type="hidden" name="dr_number" value="{{ next_dr_number }}">
+
+    <div class="row">
+        <!-- Main Details -->
+        <div class="col-lg-8">
+            <!-- Basic Information -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">description</span>
+                    Basic Information
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label class="form-label">DR Number</label>
+                            <input type="text" class="form-control" value="{{ next_dr_number }}" readonly
+                                   style="background: var(--surface-variant); font-weight: 600;">
+                            <small class="text-muted">Auto-assigned</small>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Site Name *</label>
+                            <select name="site_name" class="form-select" required>
+                                {% for s in site_names %}
+                                <option value="{{ s }}">{{ s }}</option>
+                                {% endfor %}
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Resource *</label>
+                            <select name="resource" class="form-select" required>
+                                {% for r in resources %}
+                                <option value="{{ r }}">{{ r }}</option>
+                                {% endfor %}
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Raised By *</label>
+                            <select name="raised_by" class="form-select" required>
+                                <option value="">-- Select Name --</option>
+                                {% for name in raised_by_names %}
+                                <option value="{{ name }}">{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label">Issue Description *</label>
+                        <textarea name="issue_description" class="form-control" rows="4"
+                                  placeholder="Describe the deficiency in detail..." required></textarea>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Type *</label>
+                            <select name="type" class="form-select" required>
+                                {% for t in types %}
+                                <option value="{{ t }}">{{ t }}</option>
+                                {% endfor %}
+                                <option value="Hardware" selected>Hardware</option>
+                                <option value="Software">Software</option>
+                                <option value="Hardware & Software">Hardware & Software</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Category *</label>
+                            <select name="category_name" class="form-select" required>
+                                {% for c in categories %}
+                                <option value="{{ c }}">{{ c }}</option>
+                                {% endfor %}
+                                <option value="General" selected>General</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Initial Status *</label>
+                            <select name="status" class="form-select" required>
+                                <option value="OPEN" selected>OPEN</option>
+                                <option value="In Work">In Work</option>
+                                <option value="Monitoring">Monitoring</option>
+                                <option value="On Hold">On Hold</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Severity *</label>
+                            <select name="severity" class="form-select" required>
+                                <option value="A">A - Critical</option>
+                                <option value="B">B - High</option>
+                                <option value="C" selected>C - Medium</option>
+                                <option value="D">D - Low</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Deficiency Type *</label>
+                            <select name="deficiency_type" class="form-select" required>
+                                <option value="Maintenance" selected>Maintenance</option>
+                                <option value="Training">Training</option>
+                                <option value="Customer Request">Customer Request</option>
+                                <option value="Visual Modelling">Visual Modelling</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Customer *</label>
+                            <select name="customer" class="form-select" required>
+                                {% for c in customers %}
+                                <option value="{{ c }}">{{ c }}</option>
+                                {% endfor %}
+                                <option value="Internal" selected>Internal</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignment -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">person_add</span>
+                    Assignment
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Assignee Name</label>
+                            <input type="text" name="assignee_name" class="form-control"
+                                   placeholder="Assigned person">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Assignee Group</label>
+                            <input type="text" name="assignee_group" class="form-control"
+                                   placeholder="Group/Team name">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Classification -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">settings</span>
+                    System Classification
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">System</label>
+                            <select name="system" class="form-select">
+                                <option value="">-- Select System --</option>
+                                {% for s in systems %}
+                                <option value="{{ s }}">{{ s }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Sub-System</label>
+                            <select name="subsystem" class="form-select">
+                                <option value="">-- Select Sub-System --</option>
+                                {% for s in subsystems %}
+                                <option value="{{ s }}">{{ s }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Dates -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">event</span>
+                    Dates & Timing
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" name="due_date" class="form-control">
+                        <small class="text-muted">Leave blank for automatic calculation</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">NAA Due Date</label>
+                        <input type="date" name="naa_due_date" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">On Offer Date</label>
+                        <input type="date" name="on_offer_date" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flags -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">label</span>
+                    Flags
+                </div>
+                <div class="card-body">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="dashboard_visible"
+                               id="dashboardVisible" value="true" checked>
+                        <label class="form-check-label" for="dashboardVisible">
+                            Dashboard Visible
+                        </label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="is_restricted"
+                               id="isRestricted" value="true">
+                        <label class="form-check-label" for="isRestricted">
+                            Restricted Access
+                        </label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="is_safety"
+                               id="isSafety" value="true">
+                        <label class="form-check-label" for="isSafety">
+                            Safety Related
+                        </label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="affects_qualification"
+                               id="affectsQual" value="true">
+                        <label class="form-check-label" for="affectsQual">
+                            Affects Qualification
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Impact -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">access_time</span>
+                    Impact Metrics
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Down Time (minutes)</label>
+                        <input type="number" name="downtime" class="form-control" value="0" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Interrupt Minutes</label>
+                        <input type="number" name="interrupt_minutes" class="form-control" value="0" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Device Interrupt Minutes</label>
+                        <input type="number" name="device_interrupt_minutes" class="form-control" value="0" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Optional Fields -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">more_horiz</span>
+                    Additional Info
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">SPR Number</label>
+                        <input type="text" name="spr" class="form-control" placeholder="SPR-...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tracking Number</label>
+                        <input type="text" name="tracking_number" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sub-Status</label>
+                        <input type="text" name="sub_status" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Conversion</label>
+                        <input type="text" name="conversion" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Configuration</label>
+                        <textarea name="configuration" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <span class="material-icons-round" style="font-size:20px;">check_circle</span>
+                Create Deficiency
+            </button>
+            <a href="{{ url_for('list_deficiencies') }}" class="btn btn-outline-secondary btn-lg">
+                <span class="material-icons-round" style="font-size:20px;">cancel</span>
+                Cancel
+            </a>
+        </div>
+    </div>
+</form>
+{% endblock %}

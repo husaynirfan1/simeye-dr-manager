@@ -1,0 +1,519 @@
+{% extends "base.html" %}
+{% load date_filters %}
+
+{% block title %}Dashboard - DR Deficiency Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="fw-bold text-dark mb-1">Dashboard</h1>
+        <p class="text-secondary mb-0">Overview of deficiency management system</p>
+    </div>
+</div>
+
+<!-- Total Summary Banner -->
+<div class="total-summary-banner mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <div class="summary-icon-wrapper">
+            <span class="material-icons-round">analytics</span>
+        </div>
+        <div>
+            <div class="summary-label">Total Active DR</div>
+            <div class="summary-number">{{ total_active_dr }}</div>
+        </div>
+    </div>
+    <div class="summary-decoration">
+        <span class="material-icons-round">trending_up</span>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="stats-grid mb-5">
+
+    <!-- Training Section -->
+    <div class="modern-stat-card border-top-danger">
+        <div class="card-top-section">
+            <div class="card-header-flex">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="total-badge bg-danger-subtle text-danger">{{ training_stats.in_work|add:training_stats.monitoring|add:training_stats.on_offer|add:training_stats.on_hold }} Total</span>
+                    <h5 class="card-title-modern">Training</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="metrics-container">
+            <div class="metric-pill metric-blue">
+                <span class="metric-val">{{ training_stats.in_work }}</span>
+                <span class="metric-lbl">In Work</span>
+            </div>
+            <div class="metric-pill metric-warning">
+                <span class="metric-val">{{ training_stats.monitoring }}</span>
+                <span class="metric-lbl">Monitoring</span>
+            </div>
+            <div class="metric-pill metric-purple">
+                <span class="metric-val">{{ training_stats.on_offer }}</span>
+                <span class="metric-lbl">On Offer</span>
+            </div>
+            <div class="metric-pill metric-gray">
+                <span class="metric-val">{{ training_stats.on_hold }}</span>
+                <span class="metric-lbl">On Hold</span>
+            </div>
+        </div>
+
+        <div class="duration-section">
+            <div class="duration-title">Time Open Distribution</div>
+            <div class="duration-track">
+                <div class="duration-step" title="Less than 1 Month">
+                    <span class="step-val">{{ training_stats.duration_breakdown.less_1m }}</span>
+                    <span class="step-lbl">&lt;1M</span>
+                </div>
+                <div class="duration-step" title="1 to 3 Months">
+                    <span class="step-val">{{ training_stats.duration_breakdown.one_to_three_m }}</span>
+                    <span class="step-lbl">1-3M</span>
+                </div>
+                <div class="duration-step" title="3 Months to 1 Year">
+                    <span class="step-val">{{ training_stats.duration_breakdown.three_to_one_y }}</span>
+                    <span class="step-lbl">3M-1Y</span>
+                </div>
+                <div class="duration-step step-critical" title="Over 1 Year (Critical)">
+                    <span class="step-val">{{ training_stats.duration_breakdown.greater_1y }}</span>
+                    <span class="step-lbl">&gt;1Y</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Section -->
+    <div class="modern-stat-card border-top-warning">
+        <div class="card-top-section">
+            <div class="card-header-flex">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="total-badge bg-warning-subtle text-warning-dark">{{ maintenance_stats.in_work|add:maintenance_stats.monitoring|add:maintenance_stats.on_offer|add:maintenance_stats.on_hold }} Total</span>
+                    <h5 class="card-title-modern">Maintenance</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="metrics-container">
+            <div class="metric-pill metric-blue">
+                <span class="metric-val">{{ maintenance_stats.in_work }}</span>
+                <span class="metric-lbl">In Work</span>
+            </div>
+            <div class="metric-pill metric-warning">
+                <span class="metric-val">{{ maintenance_stats.monitoring }}</span>
+                <span class="metric-lbl">Monitoring</span>
+            </div>
+            <div class="metric-pill metric-purple">
+                <span class="metric-val">{{ maintenance_stats.on_offer }}</span>
+                <span class="metric-lbl">On Offer</span>
+            </div>
+            <div class="metric-pill metric-gray">
+                <span class="metric-val">{{ maintenance_stats.on_hold }}</span>
+                <span class="metric-lbl">On Hold</span>
+            </div>
+        </div>
+
+        <div class="duration-section">
+            <div class="duration-title">Time Open Distribution</div>
+            <div class="duration-track">
+                <div class="duration-step" title="Less than 1 Month">
+                    <span class="step-val">{{ maintenance_stats.duration_breakdown.less_1m }}</span>
+                    <span class="step-lbl">&lt;1M</span>
+                </div>
+                <div class="duration-step" title="1 to 3 Months">
+                    <span class="step-val">{{ maintenance_stats.duration_breakdown.one_to_three_m }}</span>
+                    <span class="step-lbl">1-3M</span>
+                </div>
+                <div class="duration-step" title="3 Months to 1 Year">
+                    <span class="step-val">{{ maintenance_stats.duration_breakdown.three_to_one_y }}</span>
+                    <span class="step-lbl">3M-1Y</span>
+                </div>
+                <div class="duration-step step-critical" title="Over 1 Year (Critical)">
+                    <span class="step-val">{{ maintenance_stats.duration_breakdown.greater_1y }}</span>
+                    <span class="step-lbl">&gt;1Y</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visual Modelling Section -->
+    <div class="modern-stat-card border-top-success">
+        <div class="card-top-section">
+            <div class="card-header-flex">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="total-badge bg-success-subtle text-success">{{ visual_modeling_stats.in_work|add:visual_modeling_stats.monitoring|add:visual_modeling_stats.on_offer|add:visual_modeling_stats.on_hold }} Total</span>
+                    <h5 class="card-title-modern">Visual Modelling</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="metrics-container">
+            <div class="metric-pill metric-blue">
+                <span class="metric-val">{{ visual_modeling_stats.in_work }}</span>
+                <span class="metric-lbl">In Work</span>
+            </div>
+            <div class="metric-pill metric-warning">
+                <span class="metric-val">{{ visual_modeling_stats.monitoring }}</span>
+                <span class="metric-lbl">Monitoring</span>
+            </div>
+            <div class="metric-pill metric-purple">
+                <span class="metric-val">{{ visual_modeling_stats.on_offer }}</span>
+                <span class="metric-lbl">On Offer</span>
+            </div>
+            <div class="metric-pill metric-gray">
+                <span class="metric-val">{{ visual_modeling_stats.on_hold }}</span>
+                <span class="metric-lbl">On Hold</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOTTOM SECTION: Side-by-Side Layout -->
+<div class="row g-4 mb-4">
+    
+    <!-- LEFT COLUMN: Status Breakdown (Takes up 4 out of 12 columns on large screens) -->
+    <div class="col-lg-4 col-xl-3">
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-3 px-4 d-flex align-items-center gap-2">
+                <span class="material-icons-round text-primary">format_list_numbered</span>
+                <h5 class="mb-0 fw-bold">By Status</h5>
+            </div>
+            <div class="card-body p-0 d-flex flex-column">
+                <div class="table-responsive flex-grow-1">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-secondary">
+                            <tr>
+                                <th class="ps-4">Status</th>
+                                <th class="pe-4 text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in status_counts %}
+                            <tr>
+                                <td class="ps-4 fw-medium text-dark">
+                                    {% if stat.status %}{{ stat.status }}{% else %}<span class="text-muted fst-italic">(blank)</span>{% endif %}
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <a href="{% url 'deficiencies:list' %}?status={{ stat.status|urlencode }}" class="fw-bold text-decoration-none text-primary fs-5">
+                                        {{ stat.count }}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="bg-light border-top border-2">
+                            <tr>
+                                <td class="ps-4 fw-bold text-dark py-3">Grand Total</td>
+                                <td class="pe-4 text-end fw-bold text-dark fs-5 py-3">
+                                    {{ grand_total }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="text-muted small p-3 bg-light text-center border-top mt-auto">
+                    <span class="material-icons-round align-middle me-1" style="font-size: 14px;">ads_click</span>
+                    Click number for list
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Recent Deficiencies (Takes up 8 out of 12 columns on large screens) -->
+    <div class="col-lg-8 col-xl-9">
+        <div class="card shadow-sm border-0 rounded-4 h-100 recent-card">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-3 px-4 d-flex align-items-center gap-2">
+                <span class="material-icons-round text-primary">history</span>
+                <h5 class="mb-0 fw-bold">Recent Deficiencies</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_deficiencies %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 recent-table">
+                        <thead class="table-light text-secondary">
+                            <tr>
+                                <th class="ps-4">DR#</th>
+                                <th>Site</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Severity</th>
+                                <th>Raised</th>
+                                <th class="pe-4">Due Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for def in recent_deficiencies %}
+                            <tr>
+                                <td class="ps-4">
+                                    <a href="{% url 'deficiencies:detail' def.deficiency_number %}" class="fw-bold text-decoration-none">
+                                        {{ def.deficiency_number }}
+                                    </a>
+                                </td>
+                                <td><span class="text-secondary fw-medium">{{ def.site_name }}</span></td>
+                                <td><span class="badge bg-light text-dark border">{{ def.deficiency_type }}</span></td>
+                                <td>
+                                    <span class="badge rounded-pill status-{{ def.status|cut:' ' }}">{{ def.status }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge severity-indicator severity-{{ def.severity }}">{{ def.severity }}</span>
+                                </td>
+                                <td class="text-secondary small">{{ def.raised_date|format_date_ddmmyyyy }}</td>
+                                <td class="pe-4 fw-medium">{{ def.due_date|format_date_ddmmyyyy }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted flex-grow-1 d-flex flex-column justify-content-center">
+                    <span class="material-icons-round display-4 mb-3 opacity-50">inbox</span>
+                    <h5>No recent deficiencies</h5>
+                    <p>You're all caught up!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+/* ==========================================
+   Modern Dashboard CSS Enhancements
+========================================== */
+
+/* Variables for consistent theming */
+:root {
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+    --card-hover-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    --border-color: #f1f3f5;
+}
+
+/* Grid Layout */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+/* Modern Card Design */
+.modern-stat-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modern-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-hover-shadow);
+}
+
+.border-top-danger { border-top-color: #ef4444; }
+.border-top-warning { border-top-color: #f59e0b; }
+.border-top-success { border-top-color: #10b981; }
+.text-warning-dark { color: #b45309 !important; } /* Better contrast for yellow text */
+
+/* Card Headers */
+.card-top-section {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title-modern {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+    letter-spacing: -0.3px;
+}
+
+.total-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+/* Metrics Container (Soft Pills) */
+.metrics-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 20px 24px;
+}
+
+.metric-pill {
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric-val {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.metric-lbl {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+/* Soft Tint Backgrounds */
+.metric-blue { background: #eff6ff; color: #1d4ed8; }
+.metric-blue .metric-lbl { color: #60a5fa; }
+
+.metric-warning { background: #fef3c7; color: #b45309; }
+.metric-warning .metric-lbl { color: #fbbf24; }
+
+.metric-purple { background: #f3e8ff; color: #6d28d9; }
+.metric-purple .metric-lbl { color: #a78bfa; }
+
+.metric-gray { background: #f3f4f6; color: #374151; }
+.metric-gray .metric-lbl { color: #9ca3af; }
+
+/* Duration Section (Timeline Style) */
+.duration-section {
+    background: #fafafa;
+    padding: 16px 24px 20px;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto; /* Pushes to bottom if cards vary in height */
+}
+
+.duration-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #9ca3af;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.duration-track {
+    display: flex;
+    gap: 8px;
+}
+
+.duration-step {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px 4px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.step-val {
+    font-size: 20px;
+    font-weight: 700;
+    color: #374151;
+}
+
+.step-lbl {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.step-critical {
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+.step-critical .step-val { color: #dc2626; }
+.step-critical .step-lbl { color: #f87171; }
+
+/* Total Summary Banner (Hero Style) */
+.total-summary-banner {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    border-radius: 16px;
+    padding: 24px 32px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.summary-icon-wrapper {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.summary-icon-wrapper span {
+    font-size: 32px;
+}
+
+.summary-label {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+.summary-number {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1;
+    margin-top: 4px;
+}
+
+.summary-decoration {
+    position: absolute;
+    right: -20px;
+    bottom: -30px;
+    opacity: 0.1;
+    transform: rotate(-15deg);
+}
+
+.summary-decoration span {
+    font-size: 180px;
+}
+
+/* Recent Table Tweaks */
+.recent-table th {
+    font-size: 11px;
+    font-weight: 600;
+}
+.recent-table td {
+    border-bottom-color: var(--border-color);
+}
+.severity-indicator {
+    padding: 4px 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .total-summary-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+}
+</style>
+{% endblock %}

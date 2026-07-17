@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python debug_actions.py)",
+      "Bash(grep -E \"\\\\.\\(py|js|json|txt|md\\)$\")",
+      "Bash(pkill -f \"manage.py runserver\")"
+    ]
+  }
+}

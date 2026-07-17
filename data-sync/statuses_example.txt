@@ -1,0 +1,6 @@
+# Statuses
+# One per line
+
+Cleared
+OPEN
+In Work

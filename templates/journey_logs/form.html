@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}{% if form.instance.id %}Edit Journey Log #{{ form.instance.id }}{% else %}New Journey Log{% endif %} - DR Deficiency Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>{% if form.instance.id %}Edit Journey Log #{{ form.instance.id }}{% else %}New Journey Log{% endif %}</h1>
+        <p class="text-muted">{% if form.instance.id %}Update journey log details{% else %}Create a new journey log{% endif %}</p>
+    </div>
+    <a href="{% if form.instance.id %}{% url 'journey_logs:detail' form.instance.id %}{% else %}{% url 'journey_logs:list' %}{% endif %}" class="btn btn-outline-primary">
+        <span class="material-icons-round">cancel</span>
+        Cancel
+    </a>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        <strong>Please correct the following errors:</strong>
+        {{ form.errors }}
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">person</span>
+                    Customer Information
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Customer Name *</label>
+                        {{ form.customer_name }}
+                        {% if form.customer_name.errors %}<div class="text-danger small">{{ form.customer_name.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Log Date *</label>
+                        {{ form.log_date }}
+                        {% if form.log_date.errors %}<div class="text-danger small">{{ form.log_date.errors }}</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">location_on</span>
+                    Site & Resource
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Site *</label>
+                        {{ form.site }}
+                        {% if form.site.errors %}<div class="text-danger small">{{ form.site.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Resource Type *</label>
+                        {{ form.resource_type }}
+                        {% if form.resource_type.errors %}<div class="text-danger small">{{ form.resource_type.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Resource *</label>
+                        {{ form.resource }}
+                        {% if form.resource.errors %}<div class="text-danger small">{{ form.resource.errors }}</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">school</span>
+                    Training Information
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Session Type *</label>
+                        {{ form.session_type }}
+                        {% if form.session_type.errors %}<div class="text-danger small">{{ form.session_type.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Training Type *</label>
+                        {{ form.training_type }}
+                        {% if form.training_type.errors %}<div class="text-danger small">{{ form.training_type.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Report By</label>
+                        {{ form.report_by }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <a href="{% if form.instance.id %}{% url 'journey_logs:detail' form.instance.id %}{% else %}{% url 'journey_logs:list' %}{% endif %}" class="btn btn-outline-secondary">
+                    <span class="material-icons-round">cancel</span>
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <span class="material-icons-round">save</span>
+                    {% if form.instance.id %}Update Journey Log{% else %}Create Journey Log{% endif %}
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

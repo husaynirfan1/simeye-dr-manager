@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Journey Log{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('list_journey_logs') }}">Journey Logs</a></li>
+        <li class="breadcrumb-item active">New Journey Log</li>
+    </ol>
+</nav>
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Create Journey Log</h2>
+        <p class="text-muted mb-0">Fill in the session details to create a new journey log</p>
+    </div>
+    <a href="{{ url_for('list_journey_logs') }}" class="btn btn-outline-secondary">
+        <span class="material-icons-round" style="font-size:18px;">arrow_back</span>
+        Cancel
+    </a>
+</div>
+
+<!-- Schedule Slot Banner -->
+{% if slot_id %}
+<div class="alert alert-info d-flex align-items-center" role="alert">
+    <span class="material-icons-round me-2">event</span>
+    <div>
+        <strong>Schedule Slot Selected:</strong>
+        {% if session_date %}{{ session_date[8:10] }}/{{ session_date[5:7] }}/{{ session_date[0:4] }}{% endif %}
+        at {% if time_slot %}{{ time_slot }}{% endif %}
+        <small class="d-block text-muted">This journey log will be linked to the schedule slot</small>
+    </div>
+</div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('create_journey_log') }}" id="journeyLogForm">
+    <!-- CSRF Token -->
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- Schedule Slot Information (if coming from schedule) -->
+    {% if slot_id %}
+    <input type="hidden" name="schedule_slot_id" value="{{ slot_id }}">
+    {% endif %}
+
+    <div class="row">
+        <!-- Main Details -->
+        <div class="col-lg-8">
+            <!-- Customer Information -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">business</span>
+                    Customer Information
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Customer Name</label>
+                            <input type="text" name="customer_name" class="form-control"
+                                   placeholder="e.g., WESTSTAR AVIATION SERVICES SDN BHD"
+                                   value="{{ customer_name or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Report By *</label>
+                            <input type="text" name="report_by" class="form-control" required
+                                   placeholder="Name of person reporting">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Session Information -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">event_note</span>
+                    Session Information
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Date *</label>
+                            <input type="date" name="log_date" class="form-control" required
+                                   value="{% if session_date %}{{ session_date }}{% else %}{{ today_date }}{% endif %}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Site *</label>
+                            <select name="site" class="form-select" required>
+                                <option value="">-- Select --</option>
+                                <option value="PWN">PWN</option>
+                                <option value="KUL">KUL</option>
+                                {% for s in sites %}
+                                <option value="{{ s }}">{{ s }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Resource Type *</label>
+                            <select name="resource_type" class="form-select" required>
+                                <option value="">-- Select --</option>
+                                <option value="Simulator">Simulator</option>
+                                <option value="Aircraft">Aircraft</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Resource *</label>
+                            <input type="text" name="resource" class="form-control" required
+                                   placeholder="e.g., AW139, VIPT">
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Session Type *</label>
+                            <select name="session_type" class="form-select" required>
+                                <option value="">-- Select --</option>
+                                <option value="Training">Training</option>
+                                <option value="Checking">Checking</option>
+                                <option value="Test">Test</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Training Type *</label>
+                            <select name="training_type" class="form-select" required>
+                                <option value="">-- Select --</option>
+                                <option value="Recurrent">Recurrent</option>
+                                <option value="Revalidation">Revalidation</option>
+                                <option value="Conversion">Conversion</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crew Information -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="material-icons-round">people</span>
+                        Crew / Trainees
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="addCrewMember()">
+                        <span class="material-icons-round" style="font-size:16px;">add</span>
+                        Add Crew
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="crewMembersContainer">
+                        <!-- Initial crew member row -->
+                        <div class="crew-member row mb-3" data-index="0">
+                            <div class="col-md-4">
+                                <label class="form-label">Name *</label>
+                                <input type="text" name="crew_name[]" class="form-control" required
+                                       placeholder="Crew member name">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">License Number</label>
+                                <input type="text" name="license_number[]" class="form-control"
+                                       placeholder="License No.">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Type *</label>
+                                <select name="crew_type[]" class="form-select" required>
+                                    <option value="">-- Select --</option>
+                                    <option value="Captain">Captain</option>
+                                    <option value="First Officer">First Officer</option>
+                                    <option value="Training Pilot">Training Pilot</option>
+                                    <option value="Training FO">Training FO</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-outline-danger w-100" onclick="removeCrewMember(this)">
+                                    <span class="material-icons-round" style="font-size:16px;">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Link DRs -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">link</span>
+                    Link Deficiencies (Optional)
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small">
+                        Link any DR numbers that were raised during this session. You can also link DRs later from the journey log view.
+                    </p>
+                    <div id="linkedDRsContainer">
+                        <div class="input-group mb-2">
+                            <input type="text" class="form-control dr-number-input"
+                                   placeholder="Enter DR Number" pattern="\d+">
+                            <button type="button" class="btn btn-outline-secondary" onclick="addDRNumber()">
+                                <span class="material-icons-round" style="font-size:16px;">add</span>
+                                Add DR
+                            </button>
+                        </div>
+                    </div>
+                    <div id="drNumbersList" class="mt-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Help Card -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons-round">help</span>
+                    Help & Tips
+                </div>
+                <div class="card-body">
+                    <h6>Required Fields</h6>
+                    <p class="text-muted small">All fields marked with * are required.</p>
+
+                    <h6 class="mt-3">Resource Types</h6>
+                    <ul class="text-muted small">
+                        <li><strong>Simulator:</strong> Training simulator sessions</li>
+                        <li><strong>Aircraft:</strong> Actual aircraft training</li>
+                    </ul>
+
+                    <h6 class="mt-3">Session Types</h6>
+                    <ul class="text-muted small">
+                        <li><strong>Training:</strong> Regular training sessions</li>
+                        <li><strong>Checking:</strong> Evaluation/check rides</li>
+                        <li><strong>Test:</strong> Testing sessions</li>
+                    </ul>
+
+                    <h6 class="mt-3">Linking DRs</h6>
+                    <p class="text-muted small">
+                        You can link DRs that were raised during this session. Linked DRs will appear at the bottom of the generated journey log.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <span class="material-icons-round" style="font-size:20px;">check_circle</span>
+                Create Journey Log
+            </button>
+            <a href="{{ url_for('list_journey_logs') }}" class="btn btn-outline-secondary btn-lg">
+                <span class="material-icons-round" style="font-size:20px;">cancel</span>
+                Cancel
+            </a>
+        </div>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let crewCount = 1;
+let drNumbers = [];
+
+function addCrewMember() {
+    crewCount++;
+    const container = document.getElementById('crewMembersContainer');
+    const newCrew = document.createElement('div');
+    newCrew.className = 'crew-member row mb-3';
+    newCrew.dataset.index = crewCount - 1;
+    newCrew.innerHTML = `
+        <div class="col-md-4">
+            <label class="form-label">Name *</label>
+            <input type="text" name="crew_name[]" class="form-control" required
+                   placeholder="Crew member name">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">License Number</label>
+            <input type="text" name="license_number[]" class="form-control"
+                   placeholder="License No.">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Type *</label>
+            <select name="crew_type[]" class="form-select" required>
+                <option value="">-- Select --</option>
+                <option value="Captain">Captain</option>
+                <option value="First Officer">First Officer</option>
+                <option value="Training Pilot">Training Pilot</option>
+                <option value="Training FO">Training FO</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <label class="form-label">&nbsp;</label>
+            <button type="button" class="btn btn-outline-danger w-100" onclick="removeCrewMember(this)">
+                <span class="material-icons-round" style="font-size:16px;">delete</span>
+            </button>
+        </div>
+    `;
+    container.appendChild(newCrew);
+}
+
+function removeCrewMember(button) {
+    const crewMember = button.closest('.crew-member');
+    if (document.querySelectorAll('.crew-member').length > 1) {
+        crewMember.remove();
+    } else {
+        alert('You must have at least one crew member');
+    }
+}
+
+function addDRNumber() {
+    const input = document.querySelector('.dr-number-input');
+    const drNum = input.value.trim();
+
+    if (drNum && /^\d+$/.test(drNum)) {
+        if (!drNumbers.includes(drNum)) {
+            drNumbers.push(drNum);
+            updateDRList();
+            input.value = '';
+        } else {
+            alert('This DR number is already added');
+        }
+    } else if (drNum) {
+        alert('Please enter a valid DR number (digits only)');
+    }
+    input.focus();
+}
+
+function updateDRList() {
+    const listContainer = document.getElementById('drNumbersList');
+    listContainer.innerHTML = '';
+
+    drNumbers.forEach((dr, index) => {
+        const div = document.createElement('div');
+        div.className = 'input-group mb-2';
+        div.innerHTML = `
+            <input type="text" class="form-control" value="DR #${dr}" readonly>
+            <input type="hidden" name="linked_dr_numbers[]" value="${dr}">
+            <button type="button" class="btn btn-outline-danger" onclick="removeDRNumber(${index})">
+                <span class="material-icons-round" style="font-size:16px;">close</span>
+            </button>
+        `;
+        listContainer.appendChild(div);
+    });
+}
+
+function removeDRNumber(index) {
+    drNumbers.splice(index, 1);
+    updateDRList();
+}
+
+// Handle Enter key for DR input
+document.querySelector('.dr-number-input')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        addDRNumber();
+    }
+});
+
+// Add crew on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Set default date to today
+    const dateInput = document.querySelector('input[name="log_date"]');
+    if (dateInput && !dateInput.value) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+    }
+});
+</script>
+{% endblock %}

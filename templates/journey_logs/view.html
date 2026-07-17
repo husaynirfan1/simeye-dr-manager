@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}Journey Log #{{ journey_log.id }}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('list_journey_logs') }}">Journey Logs</a></li>
+        <li class="breadcrumb-item active">Journey Log #{{ journey_log.id }}</li>
+    </ol>
+</nav>
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Journey Log #{{ journey_log.id }}</h2>
+        <p class="text-muted mb-0">
+            {% if journey_log.log_date %}{{ journey_log.log_date.strftime('%d/%m/%Y') }}{% endif %}
+            {% if journey_log.resource %} - {{ journey_log.resource }}{% endif %}
+        </p>
+    </div>
+    <div class="btn-group">
+        <a href="{{ url_for('generate_journey_log', journey_log_id=journey_log.id) }}"
+           class="btn btn-primary" target="_blank">
+            <span class="material-icons-round" style="font-size:18px;">print</span>
+            Generate / Print
+        </a>
+        <a href="{{ url_for('list_journey_logs') }}" class="btn btn-outline-secondary">
+            <span class="material-icons-round" style="font-size:18px;">list</span>
+            All Journey Logs
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+        <!-- Session Details -->
+        <div class="card">
+            <div class="card-header">
+                <span class="material-icons-round">event_note</span>
+                Session Information
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Date:</strong>
+                            {% if journey_log.log_date %}
+                            {{ journey_log.log_date.strftime('%d/%m/%Y') }}
+                            {% else %}
+                            <span class="text-muted">Not specified</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Site:</strong> {{ journey_log.site or '-' }}</p>
+                        <p><strong>Resource Type:</strong> {{ journey_log.resource_type or '-' }}</p>
+                        <p><strong>Resource:</strong>
+                            {% if journey_log.resource %}
+                            <span class="badge bg-info">{{ journey_log.resource }}</span>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Session Type:</strong> {{ journey_log.session_type or '-' }}</p>
+                        <p><strong>Training Type:</strong> {{ journey_log.training_type or '-' }}</p>
+                        <p><strong>Reported By:</strong> {{ journey_log.report_by or '-' }}</p>
+                        <p><strong>Customer:</strong> {{ journey_log.customer_name or '-' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crew Members -->
+        <div class="card">
+            <div class="card-header">
+                <span class="material-icons-round">people</span>
+                Crew / Trainees
+            </div>
+            <div class="card-body p-0">
+                {% if crew %}
+                <div class="table-custom">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>License Number</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in crew %}
+                            <tr>
+                                <td>{{ member.crew_name }}</td>
+                                <td>{{ member.license_number or '-' }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ member.crew_type }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center text-muted">No crew members added</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Linked Deficiencies -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="material-icons-round">link</span>
+                    Linked Deficiencies
+                    <span class="badge bg-primary">{{ linked_drs|length }}</span>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#linkDRModal">
+                    <span class="material-icons-round" style="font-size:16px;">add_link</span>
+                    Link DRs
+                </button>
+            </div>
+            <div class="card-body p-0">
+                {% if linked_drs %}
+                <div class="table-custom">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>DR Number</th>
+                                <th>Issue Description</th>
+                                <th>Status</th>
+                                <th>Severity</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dr in linked_drs %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('view_deficiency', deficiency_number=dr.deficiency_number) }}"
+                                       class="fw-bold text-decoration-none">
+                                        DR #{{ dr.deficiency_number }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {{ dr.Issue_Description[:80] }}
+                                    {% if dr.Issue_Description and dr.Issue_Description|length > 80 %}...{% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if dr.Status == 'CLOSED' else 'warning' }}">
+                                        {{ dr.Status or 'Unknown' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'danger' if dr.Severity == 'A' else 'secondary' }}">
+                                        {{ dr.Severity or '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('unlink_dr_from_journey_log', journey_log_id=journey_log.id, deficiency_number=dr.deficiency_number) }}"
+                                          onsubmit="return confirm('Are you sure you want to unlink this DR?');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <span class="material-icons-round" style="font-size:16px;">link_off</span>
+                                            Unlink
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center">
+                    <span class="material-icons-round" style="font-size:48px; color:var(--outline);">link_off</span>
+                    <p class="text-muted mt-2">No deficiencies linked to this journey log</p>
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#linkDRModal">
+                        <span class="material-icons-round" style="font-size:16px;">add_link</span>
+                        Link Deficiencies
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Quick Stats -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <span class="material-icons-round">assessment</span>
+                Quick Stats
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="stat-card">
+                            <div class="stat-value">{{ linked_drs|length }}</div>
+                            <div class="stat-label">Linked DRs</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card">
+                            <div class="stat-value">{{ crew|length }}</div>
+                            <div class="stat-label">Crew Members</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <span class="material-icons-round">settings</span>
+                Actions
+            </div>
+            <div class="card-body d-grid gap-2">
+                <a href="{{ url_for('generate_journey_log', journey_log_id=journey_log.id) }}"
+                   class="btn btn-primary" target="_blank">
+                    <span class="material-icons-round" style="font-size:18px;">print</span>
+                    Generate / Print Journey Log
+                </a>
+                <a href="{{ url_for('list_journey_logs') }}" class="btn btn-outline-secondary">
+                    <span class="material-icons-round" style="font-size:18px;">list</span>
+                    View All Journey Logs
+                </a>
+                <form method="POST" action="{{ url_for('delete_journey_log', journey_log_id=journey_log.id) }}"
+                      onsubmit="return confirm('Are you sure you want to delete this journey log? This action cannot be undone.');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-outline-danger w-100">
+                        <span class="material-icons-round" style="font-size:18px;">delete</span>
+                        Delete Journey Log
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Meta Info -->
+        <div class="card">
+            <div class="card-header">
+                <span class="material-icons-round">info</span>
+                Meta Information
+            </div>
+            <div class="card-body">
+                <p class="mb-1"><small class="text-muted">Created:</small><br>
+                    {{ journey_log.created_at.strftime('%d/%m/%Y %H:%M') if journey_log.created_at else '-' }}</p>
+                <p class="mb-0"><small class="text-muted">Last Updated:</small><br>
+                    {{ journey_log.updated_at.strftime('%d/%m/%Y %H:%M') if journey_log.updated_at else '-' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Link DR Modal -->
+<div class="modal fade" id="linkDRModal" tabindex="-1" aria-labelledby="linkDRModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="linkDRModalLabel">
+                    <span class="material-icons-round" style="font-size:20px;">add_link</span>
+                    Link Deficiencies to Journey Log
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('link_dr_to_journey_log', journey_log_id=journey_log.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <p class="text-muted">Select deficiencies to link to this journey log:</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="drSearchInput" placeholder="Search DRs..."
+                                   onkeyup="filterDRTable()">
+                        </div>
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-outline-primary w-100" onclick="selectAllDRs()">
+                                Select All Visible
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive mt-3" style="max-height: 300px; overflow-y: auto;">
+                        <table class="table table-sm table-hover" id="drTable">
+                            <thead>
+                                <tr>
+                                    <th width="50">
+                                        <input type="checkbox" id="selectAllCheckbox" onchange="toggleAllDRs(this)">
+                                    </th>
+                                    <th>DR Number</th>
+                                    <th>Issue Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for dr in all_drs %}
+                                <tr class="dr-row">
+                                    <td>
+                                        <input type="checkbox" name="dr_numbers[]" value="{{ dr.DeficiencyNumber }}"
+                                               {% if dr.DeficiencyNumber in linked_drs|map(attribute='deficiency_number')|list %}checked disabled{% endif %}>
+                                    </td>
+                                    <td><strong>DR #{{ dr.DeficiencyNumber }}</strong></td>
+                                    <td>{{ dr.Issue_Description[:60] }}{% if dr.Issue_Description and dr.Issue_Description|length > 60 %}...{% endif %}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if dr.Status == 'CLOSED' else 'warning' }}">
+                                            {{ dr.Status or 'Unknown' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-icons-round" style="font-size:18px;">link</span>
+                        Link Selected DRs
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterDRTable() {
+    const input = document.getElementById('drSearchInput');
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('drTable');
+    const rows = table.getElementsByClassName('dr-row');
+
+    for (let row of rows) {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    }
+}
+
+function toggleAllDRs(checkbox) {
+    const table = document.getElementById('drTable');
+    const checkboxes = table.querySelectorAll('input[type="checkbox"]:not(:disabled)');
+
+    for (let cb of checkboxes) {
+        cb.checked = checkbox.checked;
+    }
+}
+
+function selectAllDRs() {
+    const table = document.getElementById('drTable');
+    const checkboxes = table.querySelectorAll('input[type="checkbox"]:not(:disabled)');
+
+    for (let cb of checkboxes) {
+        const row = cb.closest('tr');
+        if (row.style.display !== 'none') {
+            cb.checked = true;
+        }
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% load date_filters %}
+
+{% block title %}DR#{{ deficiency.deficiency_number }} - DR Deficiency Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h1>Deficiency #{{ deficiency.deficiency_number }}</h1>
+        <p class="text-muted">{{ deficiency.site_name }} - {{ deficiency.resource }}</p>
+    </div>
+    <div class="btn-group">
+        {% if user.can_edit_deficiency %}
+        <a href="{% url 'deficiencies:update' deficiency.deficiency_number|stringformat:'s' %}" class="btn btn-primary">
+            <span class="material-icons-round">edit</span>
+            Edit
+        </a>
+        {% endif %}
+        <a href="{% url 'deficiencies:list' %}" class="btn btn-outline-primary">
+            <span class="material-icons-round">arrow_back</span>
+            Back to List
+        </a>
+    </div>
+</div>
+
+<!-- Deficiency Details -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <span class="material-icons-round">info</span>
+                Deficiency Details
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <span class="detail-label">Site:</span>
+                            <span class="detail-value">{{ deficiency.site_name }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Resource:</span>
+                            <span class="detail-value">{{ deficiency.resource }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value"><span class="badge status-{{ deficiency.status }}">{{ deficiency.status }}</span></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Severity:</span>
+                            <span class="detail-value"><span class="badge severity-{{ deficiency.severity }}">{{ deficiency.severity }}</span></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Type:</span>
+                            <span class="detail-value">{{ deficiency.type }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Category:</span>
+                            <span class="detail-value">{{ deficiency.category_name }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <span class="detail-label">Raised By:</span>
+                            <span class="detail-value">{{ deficiency.raised_by_name }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Raised Date:</span>
+                            <span class="detail-value">{{ deficiency.raised_date|format_date_ddmmyyyy }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Due Date:</span>
+                            <span class="detail-value">{{ deficiency.due_date|format_date_ddmmyyyy }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Assignee:</span>
+                            <span class="detail-value">{{ deficiency.assignee_name|default:"-" }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Assignee Group:</span>
+                            <span class="detail-value">{{ deficiency.assignee_group_name|default:"-" }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Cleared By:</span>
+                            <span class="detail-value">{{ deficiency.cleared_by_name|default:"-" }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-row mt-3">
+                    <span class="detail-label w-100">Issue Description:</span>
+                </div>
+                <div class="mt-2 p-3 bg-light rounded">
+                    {{ deficiency.issue_description }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Flags -->
+        <div class="card">
+            <div class="card-header">
+                <span class="material-icons-round">flag</span>
+                Flags
+            </div>
+            <div class="card-body">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="isRestricted" {% if deficiency.is_restricted %}checked{% endif %} disabled>
+                    <label class="form-check-label" for="isRestricted">Is Restricted</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="isSafety" {% if deficiency.is_safety %}checked{% endif %} disabled>
+                    <label class="form-check-label" for="isSafety">Is Safety</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="affectsQualification" {% if deficiency.affects_qualification %}checked{% endif %} disabled>
+                    <label class="form-check-label" for="affectsQualification">Affects Qualification</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="card">
+            <div class="card-header">
+                <span class="material-icons-round">timeline</span>
+                Timeline
+            </div>
+            <div class="card-body">
+                <div class="detail-row">
+                    <span class="detail-label">Entered:</span>
+                    <span class="detail-value">{{ deficiency.entered_date|format_date_ddmmyyyy|default:"-" }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Cleared:</span>
+                    <span class="detail-value">{{ deficiency.cleared_date|format_date_ddmmyyyy|default:"-" }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Downtime:</span>
+                    <span class="detail-value">{{ deficiency.downtime }} mins</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ActionTaken Section -->
+<div class="card mt-4">
+    <div class="card-header">
+        <span class="material-icons-round">history</span>
+        ActionTaken History
+    </div>
+    <div class="card-body">
+        {% if actions %}
+        {% for action in actions %}
+        <div class="action-item">
+            <div class="action-meta">
+                <span class="material-icons-round" style="font-size:16px;">schedule</span>
+                <strong>{{ action.timestamp }}</strong>
+                <span class="material-icons-round" style="font-size:16px;">person</span>
+                <strong>{{ action.username }}</strong>
+            </div>
+            <div class="action-description">
+                {{ action.description|render_markdown }}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="text-muted mb-0">No actions recorded for this deficiency.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add Action Form -->
+{% if user.can_edit_deficiency %}
+<div class="card mt-4">
+    <div class="card-header">
+        <span class="material-icons-round">add_comment</span>
+        Add New Action
+    </div>
+    <div class="card-body">
+        <form action="{% url 'deficiencies:add_action' deficiency.deficiency_number|stringformat:'s' %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Username</label>
+                    {{ action_form.username }}
+                </div>
+                
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">Action Description *</label>
+                    {{ action_form.action_text }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <span class="material-icons-round">add</span>
+                Add Action
+            </button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<style>
+/* Markdown styling for ActionTaken content */
+.action-description {
+    line-height: 1.6;
+}
+
+.action-description a {
+    color: #0066cc;
+    text-decoration: underline;
+}
+
+.action-description a:hover {
+    color: #004499;
+    text-decoration: none;
+}
+
+.action-description code {
+    background-color: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+.action-description pre {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.action-description pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+.action-description blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 10px;
+    margin: 10px 0;
+    color: #666;
+}
+
+.action-description ul,
+.action-description ol {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.action-description li {
+    margin: 5px 0;
+}
+
+.action-description strong {
+    font-weight: 600;
+}
+
+.action-description em {
+    font-style: italic;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}Schedule - AW139{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'index' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'journey_logs:list' %}">Journey Logs</a></li>
+        <li class="breadcrumb-item active">Schedule</li>
+    </ol>
+</nav>
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">AW139 Schedule</h2>
+        <p class="text-muted mb-0">Click on an available time slot to create a journey log</p>
+    </div>
+    <div class="btn-group">
+        <button class="btn btn-outline-primary" onclick="refreshSchedule()">
+            <span class="material-icons-round" style="font-size:18px;">refresh</span>
+            Refresh from API
+        </button>
+        <a href="{% url 'journey_logs:list' %}" class="btn btn-outline-secondary">
+            <span class="material-icons-round" style="font-size:18px;">list</span>
+            Journey Logs
+        </a>
+    </div>
+</div>
+
+<!-- Legend -->
+<div class="card mb-4">
+    <div class="card-body py-2">
+        <div class="d-flex gap-4 align-items-center">
+            <span class="badge bg-light border">Available</span>
+            <span class="badge bg-warning border">Booked</span>
+            <span class="badge bg-secondary">Completed</span>
+            <small class="text-muted">Click on any Available slot to book and create journey log</small>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule Table -->
+<div class="card">
+    <div class="card-header">
+        <span class="material-icons-round">calendar_month</span>
+        Weekly Schedule - AW139 Sessions
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover mb-0" style="font-size: 12px;">
+                <thead class="table-light">
+                    <tr>
+                        <th class="sticky-column" style="min-width: 120px; position: sticky; left: 0; background: #f8f9fa; z-index: 10;">Date</th>
+                        {% for slot in time_slots %}
+                        <th style="min-width: 80px; text-align: center;">{{ slot }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for day in dates %}
+                    <tr>
+                        <td class="sticky-column" style="font-weight: 600; position: sticky; left: 0; background: white; z-index: 5;">
+                            {{ day|date:"d/m/Y" }}
+                        </td>
+                        {% for slot in time_slots %}
+                            {% with session=sessions|get_item:day|get_item:slot %}
+                            <td class="text-center p-1">
+                                {% if session.is_completed %}
+                                <span class="d-block p-2 text-muted" style="background: #e9ecef; cursor: not-allowed;">
+                                    <span class="material-icons-round" style="font-size:16px;">check_circle</span>
+                                    <br><small>Done</small>
+                                </span>
+                                {% elif session.is_booked %}
+                                    {% if session.customer %}
+                                    <div class="p-2 text-center" style="background: #fff3cd; border: 1px solid #ffc107;">
+                                        <small style="font-weight: 600;">{{ session.customer|truncatewords:3 }}</small>
+                                        <br><small style="font-size: 9px;">{{ slot }}</small>
+                                    </div>
+                                    {% else %}
+                                    <form method="post" action="{% url 'schedule:book_slot' %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="session_date" value="{{ day|date:'Y-m-d' }}">
+                                        <input type="hidden" name="time_slot" value="{{ slot }}">
+                                        <button type="submit" class="btn btn-sm btn-warning w-100" title="Booked - Click to view">
+                                            <span class="material-icons-round" style="font-size:16px;">event_busy</span>
+                                            <br><small>Booked</small>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                {% else %}
+                                <form method="post" action="{% url 'schedule:book_slot' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="session_date" value="{{ day|date:'Y-m-d' }}">
+                                    <input type="hidden" name="time_slot" value="{{ slot }}">
+                                    <button type="submit" class="btn btn-sm btn-light w-100 hover-primary" title="Available - Click to book">
+                                        <span class="material-icons-round" style="font-size:16px;">add_circle_outline</span>
+                                        <br><small>Book</small>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+                            {% endwith %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Instructions -->
+<div class="card mt-4">
+    <div class="card-header">
+        <span class="material-icons-round">info</span>
+        How to Use
+    </div>
+    <div class="card-body">
+        <ol>
+            <li><strong>View Schedule:</strong> The table shows the next 7 days with time slots from 8:00 AM to 5:30 PM</li>
+            <li><strong>Book a Slot:</strong> Click on any "Available" slot to book it and create a journey log</li>
+            <li><strong>Completed Sessions:</strong> Slots turn grey (completed) when the journey log is generated/printed</li>
+            <li><strong>Refresh:</strong> Click "Refresh from API" to update the schedule from the external scheduling system</li>
+        </ol>
+    </div>
+</div>
+
+<style>
+.sticky-column {
+    border-right: 2px solid #dee2e6 !important;
+}
+
+.hover-primary:hover {
+    background-color: var(--primary-light) !important;
+    color: white !important;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 11px;
+}
+
+.btn-sm .material-icons-round {
+    font-size: 14px;
+}
+
+.table th {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.table-responsive {
+    max-height: 600px;
+    overflow: auto;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function refreshSchedule() {
+    const today = new Date();
+    const endDate = new Date(today);
+    endDate.setDate(today.getDate() + 7);
+
+    const startStr = today.toISOString().split('T')[0];
+    const endStr = endDate.toISOString().split('T')[0];
+
+    fetch(`/api/schedule/refresh?start=${startStr}&end=${endStr}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error refreshing schedule: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error refreshing schedule');
+        });
+}
+
+// Auto-refresh every 5 minutes
+setTimeout(() => {
+    location.reload();
+}, 300000);
+</script>
+{% endblock %}

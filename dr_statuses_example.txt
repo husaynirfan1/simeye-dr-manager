@@ -1,0 +1,9 @@
+# DR Statuses
+# One status per line - must match line-for-line with dr_numbers.txt
+# Lines starting with # are comments
+
+Cleared
+OPEN
+In Work
+Monitoring
+On Hold

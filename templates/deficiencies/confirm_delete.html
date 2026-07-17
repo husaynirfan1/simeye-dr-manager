@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Delete DR#{{ deficiency.deficiency_number }} - DR Deficiency Management{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <span class="material-icons-round">warning</span>
+                Confirm Deletion
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <strong>Warning:</strong> This action cannot be undone!
+                </div>
+
+                <p>Are you sure you want to delete the following deficiency?</p>
+
+                <div class="p-3 bg-light rounded">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>DR Number:</strong> {{ deficiency.deficiency_number }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Site:</strong> {{ deficiency.site_name }}
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <strong>Resource:</strong> {{ deficiency.resource }}
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <strong>Status:</strong> {{ deficiency.status }}
+                        </div>
+                        <div class="col-12 mt-2">
+                            <strong>Description:</strong><br>
+                            {{ deficiency.issue_description }}
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'deficiencies:detail' deficiency.deficiency_number|stringformat:'s' %}" class="btn btn-outline-secondary">
+                            <span class="material-icons-round">cancel</span>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <span class="material-icons-round">delete</span>
+                            Delete Deficiency
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

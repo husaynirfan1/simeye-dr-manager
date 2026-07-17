@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Journey Log #{{ log.id }} - DR Deficiency Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h1>Journey Log #{{ log.id }}</h1>
+        <p class="text-muted">{{ log.customer_name }} - {{ log.log_date }}</p>
+    </div>
+    <div class="btn-group">
+        <a href="{% url 'journey_logs:update' log.id %}" class="btn btn-primary">
+            <span class="material-icons-round">edit</span>
+            Edit
+        </a>
+        <a href="{% url 'journey_logs:list' %}" class="btn btn-outline-primary">
+            <span class="material-icons-round">arrow_back</span>
+            Back to List
+        </a>
+    </div>
+</div>
+
+<!-- Journey Log Details -->
+<div class="card">
+    <div class="card-header">
+        <span class="material-icons-round">info</span>
+        Journey Log Details
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="detail-row">
+                    <span class="detail-label">Customer Name:</span>
+                    <span class="detail-value">{{ log.customer_name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Log Date:</span>
+                    <span class="detail-value">{{ log.log_date }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Site:</span>
+                    <span class="detail-value">{{ log.site }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Resource Type:</span>
+                    <span class="detail-value">{{ log.resource_type }}</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="detail-row">
+                    <span class="detail-label">Resource:</span>
+                    <span class="detail-value">{{ log.resource }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Session Type:</span>
+                    <span class="detail-value">{{ log.session_type }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Training Type:</span>
+                    <span class="detail-value">{{ log.training_type }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Report By:</span>
+                    <span class="detail-value">{{ log.report_by }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="detail-row">
+                    <span class="detail-label">Created At:</span>
+                    <span class="detail-value">{{ log.created_at }}</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="detail-row">
+                    <span class="detail-label">Updated At:</span>
+                    <span class="detail-value">{{ log.updated_at }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="card mt-4">
+    <div class="card-header">
+        <span class="material-icons-round">settings</span>
+        Actions
+    </div>
+    <div class="card-body">
+        <div class="btn-group">
+            <a href="{% url 'journey_logs:update' log.id %}" class="btn btn-primary">
+                <span class="material-icons-round">edit</span>
+                Edit
+            </a>
+            <a href="{% url 'journey_logs:delete' log.id %}" class="btn btn-danger">
+                <span class="material-icons-round">delete</span>
+                Delete
+            </a>
+            <a href="{% url 'journey_logs:list' %}" class="btn btn-outline-primary">
+                <span class="material-icons-round">list</span>
+                Back to List
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOURNEY LOG #{{ journey_log.id }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            line-height: 1.3;
+            color: #000;
+            background: #fff;
+            padding: 20px;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        .journey-log {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 2px solid #000;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .logo-eye {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #000;
+            border-radius: 50%;
+            line-height: 36px;
+            font-size: 20px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        .customer-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            text-decoration: underline;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .field-row {
+            display: flex;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed #999;
+            padding-bottom: 2px;
+        }
+
+        .field-label {
+            font-weight: bold;
+            width: 150px;
+            flex-shrink: 0;
+        }
+
+        .field-value {
+            flex-grow: 1;
+            min-height: 18px;
+            border-bottom: 1px solid #000;
+        }
+
+        .field-value-filled {
+            flex-grow: 1;
+        }
+
+        .required {
+            color: red;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #000;
+            padding: 6px 8px;
+            text-align: left;
+        }
+
+        table th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .crew-table {
+            margin-bottom: 20px;
+        }
+
+        .linked-dr-table {
+            margin-top: 20px;
+            page-break-inside: avoid;
+        }
+
+        .linked-dr-table th {
+            background: #fff;
+        }
+
+        .dr-ref-section {
+            margin-top: 30px;
+            border-top: 2px solid #000;
+            padding-top: 15px;
+            page-break-inside: avoid;
+        }
+
+        .dr-ref-title {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .signature-section {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            page-break-inside: avoid;
+        }
+
+        .signature-box {
+            width: 200px;
+            text-align: center;
+        }
+
+        .signature-line {
+            border-top: 1px solid #000;
+            margin-top: 40px;
+            padding-top: 5px;
+        }
+
+        .print-buttons {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .print-buttons button {
+            margin: 0 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            border: none;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .btn-print {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-close {
+            background: #64748b;
+            color: white;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 9px;
+            border-radius: 3px;
+            border: 1px solid #000;
+        }
+
+        .badge-a { background: #fee; }
+        .badge-b { background: #ffd; }
+        .badge-c { background: #efe; }
+        .badge-d { background: #eef; }
+
+        .badge-open { background: #fee; }
+        .badge-closed { background: #efe; }
+        .badge-work { background: #ffd; }
+
+        @media print {
+            .journey-log {
+                border: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Print Buttons (No Print) -->
+    <div class="print-buttons no-print">
+        <button class="btn-print" onclick="window.print()">
+            Print Journey Log
+        </button>
+        <button class="btn-close" onclick="window.close()">
+            Close
+        </button>
+    </div>
+
+    <div class="journey-log">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <span class="logo-eye">👁</span> SimEye
+            </div>
+            <div class="title">JOURNEY LOG</div>
+            <div class="customer-info">
+                <div>
+                    <strong>Customer:</strong> {{ journey_log.customer_name or '__________________________' }}
+                </div>
+                <div>
+                    <strong>Date:</strong>
+                    {% if journey_log.log_date %}
+                    {{ journey_log.log_date.strftime('%d/%m/%Y') }}
+                    {% else %}
+                    __/__/____
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Information -->
+        <div class="form-section">
+            <div class="section-title">SESSION INFORMATION</div>
+
+            <div class="field-row">
+                <span class="field-label">Date <span class="required">*</span></span>
+                <span class="field-value-filled">
+                    {% if journey_log.log_date %}
+                    {{ journey_log.log_date.strftime('%d/%m/%Y') }}
+                    {% else %}
+                    _______________________
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="field-row">
+                <span class="field-label">Site <span class="required">*</span></span>
+                <span class="field-value-filled">
+                    {{ journey_log.site or '_________________________' }}
+                </span>
+            </div>
+
+            <div class="field-row">
+                <span class="field-label">Resource Type <span class="required">*</span></span>
+                <span class="field-value-filled">
+                    {{ journey_log.resource_type or '_________________________' }}
+                </span>
+            </div>
+
+            <div class="field-row">
+                <span class="field-label">Resource <span class="required">*</span></span>
+                <span class="field-value-filled">
+                    {{ journey_log.resource or '_________________________' }}
+                </span>
+            </div>
+
+            <div class="field-row">
+                <span class="field-label">Session Type <span class="required">*</span></span>
+                <span class="field-value-filled">
+                    {{ journey_log.session_type or '_________________________' }}
+                </span>
+            </div>
+
+            <div class="field-row">
+                <span class="field-label">Training Type <span class="required">*</span></span>
+                <span class="field-value-filled">
+                    {{ journey_log.training_type or '_________________________' }}
+                </span>
+            </div>
+
+            <div class="field-row">
+                <span class="field-label">Report By <span class="required">*</span></span>
+                <span class="field-value-filled">
+                    {{ journey_log.report_by or '_________________________' }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Crew Information -->
+        <div class="form-section">
+            <div class="section-title">CREW / TRAINEES</div>
+
+            {% if crew %}
+            <table class="crew-table">
+                <thead>
+                    <tr>
+                        <th width="35%">Name</th>
+                        <th width="35%">License Number</th>
+                        <th width="30%">Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in crew %}
+                    <tr>
+                        <td>{{ member.crew_name }}</td>
+                        <td>{{ member.license_number or '-' }}</td>
+                        <td>{{ member.crew_type }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <table class="crew-table">
+                <thead>
+                    <tr>
+                        <th width="35%">Name</th>
+                        <th width="35%">License Number</th>
+                        <th width="30%">Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+
+        <!-- Linked DRs Reference -->
+        {% if linked_drs %}
+        <div class="dr-ref-section">
+            <div class="dr-ref-title">LINKED DEFICIENCY REPORTS (DRs)</div>
+            <p style="margin-bottom: 10px; font-size: 10px;">
+                The following deficiency reports were raised during this session:
+            </p>
+
+            <table class="linked-dr-table">
+                <thead>
+                    <tr>
+                        <th width="60">DR #</th>
+                        <th width="60">Severity</th>
+                        <th width="80">Status</th>
+                        <th>Issue Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dr in linked_drs %}
+                    <tr>
+                        <td><strong>{{ dr.deficiency_number }}</strong></td>
+                        <td>
+                            <span class="badge badge-{{ dr.Severity|lower }}">
+                                {{ dr.Severity or '-' }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-{{ 'closed' if dr.Status == 'CLOSED' else 'open' }}">
+                                {{ dr.Status or 'Unknown' }}
+                            </span>
+                        </td>
+                        <td>{{ dr.Issue_Description or 'No description available' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="signature-box">
+                <div class="signature-line">Instructor Signature</div>
+            </div>
+            <div class="signature-box">
+                <div class="signature-line">Trainee Signature</div>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div style="margin-top: 30px; font-size: 9px; color: #666; border-top: 1px solid #ccc; padding-top: 10px;">
+            <div>
+                <strong>Journey Log ID:</strong> #{{ journey_log.id }}
+                <span style="margin-left: 20px;">
+                    <strong>Generated:</strong> {{ moment() }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function moment() {
+            return new Date().toLocaleString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Auto-update timestamp
+        document.addEventListener('DOMContentLoaded', function() {
+            const timestampSpan = document.querySelector('.dr-ref-section + div strong + span');
+            if (timestampSpan) {
+                timestampSpan.nextSibling.textContent = ' ' + moment();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% load date_filters %}
+
+{% block title %}Deficiencies - DR Deficiency Management{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">All Deficiencies</h2>
+        <p class="text-muted mb-0">{{ total_count }} total records found</p>
+    </div>
+    <a href="{% url 'deficiencies:create' %}" class="btn btn-primary">
+        <span class="material-icons-round">add_circle</span>
+        New Deficiency
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="filter-section">
+    <form method="get" action="{% url 'deficiencies:list' %}">
+        <div class="row">
+            <div class="col-md-3">
+                <label class="form-label">Search</label>
+                <div class="search-box">
+                    <span class="material-icons-round">search</span>
+                    <input type="text" name="search" class="form-control" placeholder="DR#, Site, Resource, Issue..."
+                           value="{{ search }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    {% for s in statuses %}
+                    <option value="{{ s }}" {% if s == status_filter %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Severity</label>
+                <select name="severity" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Severities</option>
+                    {% for s in severities %}
+                    <option value="{{ s }}" {% if s == severity_filter %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Site</label>
+                <select name="site" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Sites</option>
+                    {% for s in sites %}
+                    <option value="{{ s }}" {% if s == site_filter %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Resource</label>
+                <select name="resource" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Resources</option>
+                    {% for r in resources %}
+                    <option value="{{ r }}" {% if r == resource_filter %}selected{% endif %}>{{ r }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <!-- Button removed - filters auto-submit now -->
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <a href="{% url 'deficiencies:list' %}" class="btn btn-sm btn-outline-secondary">
+                    <span class="material-icons-round" style="font-size:16px;">clear</span>
+                    Clear Filters
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Results Table -->
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-custom table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>DR #</th>
+                        <th>Site</th>
+                        <th>Resource</th>
+                        <th>Issue Description</th>
+                        <th>Status</th>
+                        <th>Severity</th>
+                        <th>Category</th>
+                        <th>Deficiency Type</th>
+                        <!-- Assignee header removed from here -->
+                        <th>Raised</th>
+                        <th style="min-width: 140px;">Due Date</th> <!-- Width increased here -->
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if deficiencies %}
+                        {% for def in deficiencies %}
+                        <tr>
+                            <td><strong>{{ def.deficiency_number }}</strong></td>
+                            <td>{{ def.site_name }}</td>
+                            <td>{{ def.resource }}</td>
+                            <td>
+                                {% if def.issue_description %}
+                                    {% with desc=def.issue_description %}
+                                        {% if desc|length > 60 %}{{ desc|truncatewords:10 }}{% else %}{{ desc }}{% endif %}
+                                    {% endwith %}
+                                {% else %}
+                                    <em class="text-muted">No description</em>
+                                {% endif %}
+                            </td>
+                            <td><span class="badge status-{{ def.status|cut:' ' }}">{{ def.status }}</span></td>
+                            <td><span class="badge severity-{{ def.severity }}">{{ def.severity }}</span></td>
+                            <td>{{ def.category_name|default:'-' }}</td>
+                            <td>{{ def.deficiency_type|default:'-' }}</td>
+                            
+                            <td>{{ def.raised_by_name }}</td>
+                            <td>{{ def.due_date|format_date_ddmmyyyy }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'deficiencies:detail' def.deficiency_number %}"
+                                       class="btn btn-outline-primary" title="View">
+                                        <span class="material-icons-round" style="font-size:16px;">visibility</span>
+                                    </a>
+                                    <a href="{% url 'deficiencies:update' def.deficiency_number|stringformat:'s' %}"
+                                       class="btn btn-outline-secondary" title="Edit">
+                                        <span class="material-icons-round" style="font-size:16px;">edit</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="11">
+                                <div class="empty-state">
+                                    <span class="material-icons-round">search_off</span>
+                                    <p class="mb-0">No deficiencies found matching your criteria.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <nav class="p-3">
+            <ul class="pagination justify-content-center mb-0">
+                {% if page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page|add:'-1' }}&search={{ search }}&status={{ status_filter }}&severity={{ severity_filter }}&site={{ site_filter }}&resource={{ resource_filter }}">
+                        <span class="material-icons-round" style="font-size:18px;">chevron_left</span>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for p in page_range %}
+                    {% if p == page %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ p }}</span>
+                        </li>
+                    {% elif p == '…' %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&hellip;</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ p }}&search={{ search }}&status={{ status_filter }}&severity={{ severity_filter }}&site={{ site_filter }}&resource={{ resource_filter }}">{{ p }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page < total_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page|add:'1' }}&search={{ search }}&status={{ status_filter }}&severity={{ severity_filter }}&site={{ site_filter }}&resource={{ resource_filter }}">
+                        <span class="material-icons-round" style="font-size:18px;">chevron_right</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

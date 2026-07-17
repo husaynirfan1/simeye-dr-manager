@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - DR Deficiency Management{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="empty-state">
+                <span class="material-icons-round">warning</span>
+                <h2>Server Error</h2>
+                <p>Something went wrong on our end. Please try again later.</p>
+                <a href="{% url 'deficiencies:dashboard' %}" class="btn btn-primary">
+                    <span class="material-icons-round">home</span>
+                    Go to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

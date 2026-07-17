@@ -1,0 +1,13 @@
+# DR Status Sync File
+# Format: DR#,Status (comma or space separated)
+# Lines starting with # are comments
+
+# Examples - uncomment and modify:
+# 4452,Cleared
+# 4453,OPEN
+# 4454,In Work
+# 4455,Closed
+
+# Space-separated format also works:
+# 4456 Cleared
+# 4457 OPEN

@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}{% if form.instance.deficiency_number %}Edit DR#{{ form.instance.deficiency_number }}{% else %}New Deficiency{% endif %} - DR Deficiency Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="mb-0">{% if form.instance.deficiency_number %}Edit Deficiency #{{ form.instance.deficiency_number }}{% else %}New Deficiency{% endif %}</h2>
+        <p class="text-muted mb-0">{% if form.instance.deficiency_number %}Update deficiency details{% else %}Create a new deficiency record{% endif %}</p>
+    </div>
+    <a href="{% if form.instance.deficiency_number %}{% url 'deficiencies:detail' form.instance.deficiency_number|stringformat:'s' %}{% else %}{% url 'deficiencies:list' %}{% endif %}" class="btn btn-outline-secondary btn-sm">
+        <span class="material-icons-round align-middle">arrow_back</span> Back
+    </a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% if form.errors %}
+    <div class="alert alert-danger py-2">
+        <strong>Please correct the following errors:</strong>
+        {{ form.errors }}
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-light py-2">
+            <span class="material-icons-round align-middle me-1" style="font-size: 18px;">info</span> 
+            <strong>Core Information</strong>
+        </div>
+        <div class="card-body py-2">
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <label class="form-label small fw-bold mb-1">Site Name *</label>
+                    {{ form.site_name }}
+                    {% if form.site_name.errors %}<div class="text-danger small">{{ form.site_name.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="form-label small fw-bold mb-1">Resource *</label>
+                    {{ form.resource }}
+                    {% if form.resource.errors %}<div class="text-danger small">{{ form.resource.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="form-label small fw-bold mb-1">Customer</label>
+                    {{ form.customer }}
+                    {% if form.customer.errors %}<div class="text-danger small">{{ form.customer.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="form-label small fw-bold mb-1">Raised By</label>
+                    {{ form.raised_by_name }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mb-2">
+                    <label class="form-label small fw-bold mb-1">Issue Description *</label>
+                    {{ form.issue_description }}
+                    {% if form.issue_description.errors %}<div class="text-danger small">{{ form.issue_description.errors }}</div>{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-light py-2">
+            <span class="material-icons-round align-middle me-1" style="font-size: 18px;">category</span>
+            <strong>Classification & Assignment</strong>
+        </div>
+        <div class="card-body py-2">
+            <div class="row">
+                <div class="col-md-2 mb-2">
+                    <label class="form-label small fw-bold mb-1">Status *</label>
+                    {{ form.status }}
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label class="form-label small fw-bold mb-1">Severity *</label>
+                    {{ form.severity }}
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label class="form-label small fw-bold mb-1">Type</label>
+                    <select name="type" class="form-select" id="{{ form.type.id_for_label }}">
+                        <option value="">Select...</option>
+                        {% for t in types %}
+                            <option value="{{ t }}" {% if form.type.value == t %}selected{% endif %}>{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="form-label small fw-bold mb-1">Category *</label>
+                    {{ form.category_name }}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="form-label small fw-bold mb-1">Deficiency Type</label>
+                    {{ form.deficiency_type }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <label class="form-label small fw-bold mb-1">Assignee</label>
+                    {{ form.assignee_name }}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="form-label small fw-bold mb-1">Assignee Group</label>
+                    {{ form.assignee_group_name }}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="form-label small fw-bold mb-1">System</label>
+                    <select name="system" class="form-select" id="{{ form.system.id_for_label }}">
+                        <option value="">Select...</option>
+                        {% for sys in systems %}
+                            <option value="{{ sys }}" {% if form.system.value == sys %}selected{% endif %}>{{ sys }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="form-label small fw-bold mb-1">Sub-System</label>
+                    <select name="sub_system" class="form-select" id="{{ form.sub_system.id_for_label }}">
+                        <option value="">Select...</option>
+                        {% for sub in subsystems %}
+                            <option value="{{ sub }}" {% if form.sub_system.value == sub %}selected{% endif %}>{{ sub }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-light py-2">
+            <span class="material-icons-round align-middle me-1" style="font-size: 18px;">track_changes</span>
+            <strong>Tracking & Metrics</strong>
+        </div>
+        <div class="card-body py-2">
+            <div class="row">
+                <div class="col-md-2 mb-2">
+                    <label class="form-label small fw-bold mb-1">Due Date *</label>
+                    {{ form.due_date }}
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label class="form-label small fw-bold mb-1">NAA Due</label>
+                    {{ form.naa_due_date }}
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label class="form-label small fw-bold mb-1">On Offer</label>
+                    {{ form.on_offer_date }}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="form-label small fw-bold mb-1">SPR</label>
+                    {{ form.spr }}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="form-label small fw-bold mb-1">Tracking #</label>
+                    {{ form.tracking_number }}
+                </div>
+            </div>
+
+            <div class="row align-items-end">
+                <div class="col-md-2 mb-2">
+                    <label class="form-label small fw-bold mb-1">Down (min)</label>
+                    {{ form.downtime }}
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label class="form-label small fw-bold mb-1">Int (min)</label>
+                    {{ form.interrupt_minutes }}
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label class="form-label small fw-bold mb-1">Dev Int (min)</label>
+                    {{ form.device_interrupt_minutes }}
+                </div>
+                
+                <div class="col-md-6 mb-2 d-flex justify-content-around bg-light p-2 rounded">
+                    <div class="form-check form-switch">
+                        {{ form.dashboard_visible }}
+                        <label class="form-check-label small" for="{{ form.dashboard_visible.id }}">Dashboard</label>
+                    </div>
+                    <div class="form-check form-switch text-danger">
+                        {{ form.is_restricted }}
+                        <label class="form-check-label small" for="{{ form.is_restricted.id }}">Restricted</label>
+                    </div>
+                    <div class="form-check form-switch text-warning">
+                        {{ form.is_safety }}
+                        <label class="form-check-label small" for="{{ form.is_safety.id }}">Safety</label>
+                    </div>
+                    <div class="form-check form-switch text-primary">
+                        {{ form.affects_qualification }}
+                        <label class="form-check-label small" for="{{ form.affects_qualification.id }}">Qual</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-3 d-flex justify-content-end bg-light">
+            <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                <span class="material-icons-round align-middle me-1">save</span>
+                {% if form.instance.deficiency_number %}Update Deficiency{% else %}Create Deficiency{% endif %}
+            </button>
+        </div>
+    </div>
+</form>
+{% endblock %}

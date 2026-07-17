@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Journey Logs{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'deficiencies:dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Journey Logs</li>
+    </ol>
+</nav>
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Journey Logs</h2>
+        <p class="text-muted mb-0">Manage training session records and linked deficiencies</p>
+    </div>
+    <a href="{% url 'journey_logs:create' %}" class="btn btn-primary">
+        <span class="material-icons-round" style="font-size:18px;">add_circle</span>
+        New Journey Log
+    </a>
+</div>
+
+<!-- Journey Logs List -->
+{% if journey_logs %}
+<div class="card">
+    <div class="card-header">
+        <span class="material-icons-round">list_alt</span>
+        All Journey Logs
+    </div>
+    <div class="card-body p-0">
+        <div class="table-custom">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Site</th>
+                        <th>Resource</th>
+                        <th>Session Type</th>
+                        <th>Reported By</th>
+                        <th>Linked DRs</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in journey_logs %}
+                    <tr>
+                        <td>
+                            {% if log.log_date %}
+                            {{ log.log_date|date:"d/m/Y" }}
+                            {% else %}
+                            <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ log.customer_name|default:'-' }}</td>
+                        <td>{{ log.site|default:'-' }}</td>
+                        <td>
+                            {% if log.resource %}
+                            <span class="badge bg-info">{{ log.resource }}</span>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td>{{ log.session_type|default:'-' }}</td>
+                        <td>{{ log.report_by|default:'-' }}</td>
+                        <td>
+                            <span class="badge bg-{% if log.linked_dr_count > 0 %}success{% else %}secondary{% endif %}">
+                                {{ log.linked_dr_count }} DR{% if log.linked_dr_count != 1 %}s{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'journey_logs:detail' log.id %}"
+                                   class="btn btn-outline-primary" title="View">
+                                    <span class="material-icons-round" style="font-size:16px;">visibility</span>
+                                </a>
+                                <a href="{% url 'journey_logs:generate' log.id %}"
+                                   class="btn btn-outline-secondary" title="Generate/Print">
+                                    <span class="material-icons-round" style="font-size:16px;">print</span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <span class="material-icons-round" style="font-size:64px; color:var(--outline);">folder_open</span>
+        <h5 class="mt-3">No Journey Logs Found</h5>
+        <p class="text-muted">Create your first journey log to get started</p>
+        <a href="{% url 'journey_logs:create' %}" class="btn btn-primary">
+            <span class="material-icons-round" style="font-size:18px;">add_circle</span>
+            Create Journey Log
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

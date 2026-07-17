@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<!--
+================================================================================
+DR DEFICIENCY MANAGEMENT SYSTEM - HTA Client
+================================================================================
+A Windows-native client (no Python required) for PostgreSQL database access.
+
+REQUIREMENTS:
+- PostgreSQL ODBC Driver (psqlODBC) must be installed
+- Download from: https://www.postgresql.org/ftp/odbc/versions/msi/
+
+CONFIGURATION:
+Edit the DB_CONFIG section below to match your database settings.
+================================================================================
+-->
+<html>
+<head>
+<title>DR Deficiency Management System</title>
+<HTA:APPLICATION
+    ID="DRClientHTA"
+    APPLICATIONNAME="DR Deficiency Manager"
+    BORDER="thin"
+    BORDERSTYLE="normal"
+    CAPTION="yes"
+    ICON=""
+    MAXIMIZEBUTTON="yes"
+    MINIMIZEBUTTON="yes"
+    SHOWINTASKBAR="yes"
+    SINGLEINSTANCE="yes"
+    SYSMENU="yes"
+    VERSION="1.0"
+    WINDOWSTATE="normal"/>
+<style type="text/css">
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+.header p {
+    margin: 5px 0 0;
+    opacity: 0.9;
+    font-size: 14px;
+}
+.menu-bar {
+    background: #2c3e50;
+    padding: 10px;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+.menu-btn {
+    background: #34495e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 13px;
+    transition: all 0.3s;
+}
+.menu-btn:hover {
+    background: #3498db;
+    transform: translateY(-2px);
+}
+.menu-btn.active {
+    background: #27ae60;
+}
+.content {
+    padding: 20px;
+    min-height: 400px;
+}
+.panel {
+    display: none;
+}
+.panel.active {
+    display: block;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #555;
+}
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: #3498db;
+    outline: none;
+}
+.btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-right: 10px;
+    transition: all 0.3s;
+}
+.btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+.btn-success {
+    background: #27ae60;
+}
+.btn-success:hover {
+    background: #229954;
+}
+.btn-danger {
+    background: #e74c3c;
+}
+.btn-danger:hover {
+    background: #c0392b;
+}
+.btn-warning {
+    background: #f39c12;
+}
+.btn-warning:hover {
+    background: #e67e22;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 12px;
+}
+thead {
+    background: #34495e;
+    color: white;
+}
+thead th {
+    padding: 12px 8px;
+    text-align: left;
+}
+tbody td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #ddd;
+}
+tbody tr:hover {
+    background: #f8f9fa;
+}
+.status-open {
+    color: #e74c3c;
+    font-weight: bold;
+}
+.status-closed {
+    color: #27ae60;
+    font-weight: bold;
+}
+.severity-high {
+    color: #c0392b;
+    font-weight: bold;
+}
+.severity-medium {
+    color: #f39c12;
+    font-weight: bold;
+}
+.severity-low {
+    color: #27ae60;
+}
+.alert {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+.alert-warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+.alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+.row {
+    display: flex;
+    gap: 15px;
+}
+.col {
+    flex: 1;
+}
+.col-half {
+    flex: 0.5;
+}
+.connection-status {
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+.connected {
+    background: #d4edda;
+    color: #155724;
+}
+.disconnected {
+    background: #f8d7da;
+    color: #721c24;
+}
+.hidden {
+    display: none;
+}
+</style>
+<script type="text/vbscript">
+' ==============================================================================
+' DATABASE CONFIGURATION - EDIT THESE VALUES
+' ==============================================================================
+Const DB_HOST = "172.24.2.46"
+Const DB_PORT = "5432"
+Const DB_NAME = "maintenance_app"
+Const DB_USER = "postgres"
+Const DB_PASSWORD = "pwneaw139"
+
+' Connection string for PostgreSQL ODBC
+Function GetConnectionString()
+    GetConnectionString = "Driver={PostgreSQL Unicode};Server=" & DB_HOST & _
+                          ";Port=" & DB_PORT & _
+                          ";Database=" & DB_NAME & _
+                          ";Uid=" & DB_USER & _
+                          ";Pwd=" & DB_PASSWORD & _
+                          ";SSLmode=disable;"
+End Function
+
+' ==============================================================================
+' DATABASE CONNECTION HELPER
+' ==============================================================================
+Dim dbConnection
+
+Function TestConnection()
+    On Error Resume Next
+    Set dbConnection = CreateObject("ADODB.Connection")
+    dbConnection.Open GetConnectionString()
+
+    If Err.Number <> 0 Then
+        TestConnection = False
+        ShowError "Database Connection Failed: " & Err.Description & vbCrLf & _
+                     vbCrLf & "Please ensure PostgreSQL ODBC driver is installed." & vbCrLf & _
+                     "Download from: https://www.postgresql.org/ftp/odbc/versions/msi/"
+        Err.Clear
+    Else
+        TestConnection = True
+        ShowSuccess "Database connected successfully!"
+    End If
+End Function
+
+Sub CloseConnection()
+    On Error Resume Next
+    If Not (dbConnection Is Nothing) Then
+        If dbConnection.State = 1 Then
+            dbConnection.Close
+        End If
+        Set dbConnection = Nothing
+    End If
+End Sub
+
+' ==============================================================================
+' SQL EXECUTION
+' ==============================================================================
+Function ExecuteSQL(query, params)
+    On Error Resume Next
+    Dim cmd, rs, param, i
+
+    Set cmd = CreateObject("ADODB.Command")
+    cmd.ActiveConnection = dbConnection
+    cmd.CommandText = query
+    cmd.CommandType = 1 ' adCmdText
+
+    ' Add parameters if provided
+    If IsArray(params) Then
+        For i = 0 To UBound(params)
+            ' Create parameter with appropriate type
+            Dim pName, pValue, pType
+            pName = "@param" & i
+            pValue = params(i)
+
+            ' Determine parameter type
+            If IsNumeric(pValue) Then
+                pType = 3 ' adInteger
+            ElseIf IsDate(pValue) Then
+                pType = 7 ' adDate
+            Else
+                pType = 200 ' adVarChar
+            End If
+
+            cmd.Parameters.Append cmd.CreateParameter(pName, pType, 1, Len(CStr(pValue)) + 10, pValue)
+        Next
+    End If
+
+    Set rs = cmd.Execute
+
+    If Err.Number <> 0 Then
+        ShowError "SQL Error: " & Err.Description
+        Set ExecuteSQL = Nothing
+        Err.Clear
+        Exit Function
+    End If
+
+    Set ExecuteSQL = rs
+End Function
+
+' ==============================================================================
+' UI HELPERS
+' ==============================================================================
+Sub ShowPanel(panelId)
+    Dim panels, panel
+    panels = Array("panel-menu", "panel-read", "panel-search", "panel-create", "panel-update", "panel-delete")
+
+    For Each panel In panels
+        document.getElementById(panel).className = "panel"
+    Next
+
+    document.getElementById(panelId).className = "panel active"
+
+    ' Update menu button states
+    Dim menuBtns, btn
+    menuBtns = Array("btn-menu", "btn-read", "btn-search", "btn-create", "btn-update", "btn-delete")
+    For Each btn In menuBtns
+        If document.getElementById(btn) IsNot Nothing Then
+            document.getElementById(btn).className = "menu-btn"
+        End If
+    Next
+
+    ' Highlight active button
+    Dim activeBtn
+    Select Case panelId
+        Case "panel-menu": activeBtn = "btn-menu"
+        Case "panel-read": activeBtn = "btn-read"
+        Case "panel-search": activeBtn = "btn-search"
+        Case "panel-create": activeBtn = "btn-create"
+        Case "panel-update": activeBtn = "btn-update"
+        Case "panel-delete": activeBtn = "btn-delete"
+    End Select
+
+    If activeBtn <> "" And document.getElementById(activeBtn) IsNot Nothing Then
+        document.getElementById(activeBtn).className = "menu-btn active"
+    End If
+End Sub
+
+Sub ShowAlert(message, alertType)
+    Dim alertDiv
+    alertDiv = "<div class='alert alert-" & alertType & "'>" & message & "</div>"
+    document.getElementById("alert-area").innerHTML = alertDiv
+
+    ' Auto-hide after 5 seconds for success messages
+    If alertType = "success" Then
+        setTimeout "document.getElementById('alert-area').innerHTML = ''", 5000
+    End If
+End Sub
+
+Sub ShowSuccess(message)
+    ShowAlert message, "success"
+End Sub
+
+Sub ShowError(message)
+    ShowAlert message, "error"
+End Sub
+
+Sub ShowWarning(message)
+    ShowAlert message, "warning"
+End Sub
+
+Sub ShowInfo(message)
+    ShowAlert message, "info"
+End Sub
+
+' ==============================================================================
+' READ DEFICIENCIES
+' ==============================================================================
+Sub LoadRecentDeficiencies()
+    On Error Resume Next
+    Dim query, rs, html
+
+    query = "SELECT ""DeficiencyNumber"", ""SiteName"", ""Resource"", ""Issue_Description"", ""Status"", ""Severity"", ""RaisedByName"" " & _
+            "FROM dr_deficiency " & _
+            "ORDER BY ""DeficiencyNumber"" DESC " & _
+            "LIMIT 10;"
+
+    Set rs = ExecuteSQL(query, Empty)
+
+    If rs Is Nothing Then
+        document.getElementById("read-results").innerHTML = "<p style='color:red'>Failed to load data.</p>"
+        Exit Sub
+    End If
+
+    html = "<table><thead><tr>" & _
+           "<th>Def. Num</th>" & _
+           "<th>Site</th>" & _
+           "<th>Resource</th>" & _
+           "<th>Description</th>" & _
+           "<th>Status</th>" & _
+           "<th>Severity</th>" & _
+           "<th>Raised By</th>" & _
+           "</tr></thead><tbody>"
+
+    Dim hasData
+    hasData = False
+
+    Do While Not rs.EOF
+        hasData = True
+        Dim defNum, site, resource, desc, status, severity, raisedBy
+        defNum = rs("DeficiencyNumber").Value
+        site = rs("SiteName").Value & ""
+        resource = rs("Resource").Value & ""
+        desc = rs("Issue_Description").Value & ""
+        status = rs("Status").Value & ""
+        severity = rs("Severity").Value & ""
+        raisedBy = rs("RaisedByName").Value & ""
+
+        ' Truncate long descriptions
+        If Len(desc) > 35 Then desc = Left(desc, 32) & "..."
+
+        ' Style classes
+        Dim statusClass, severityClass
+        statusClass = "status-" & LCase(status)
+        severityClass = "severity-" & LCase(severity)
+
+        html = html & "<tr>" & _
+               "<td>" & defNum & "</td>" & _
+               "<td>" & site & "</td>" & _
+               "<td>" & resource & "</td>" & _
+               "<td>" & desc & "</td>" & _
+               "<td class='" & statusClass & "'>" & status & "</td>" & _
+               "<td class='" & severityClass & "'>" & severity & "</td>" & _
+               "<td>" & raisedBy & "</td>" & _
+               "</tr>"
+        rs.MoveNext
+    Loop
+
+    rs.Close
+    Set rs = Nothing
+
+    If Not hasData Then
+        html = html & "<tr><td colspan='7' style='text-align:center; padding: 20px;'>No records found</td></tr>"
+    End If
+
+    html = html & "</tbody></table>"
+    document.getElementById("read-results").innerHTML = html
+End Sub
+
+' ==============================================================================
+' SEARCH DEFICIENCIES
+' ==============================================================================
+Sub SearchDeficiencies()
+    Dim searchTerm, query, rs, html, likeTerm
+
+    searchTerm = Trim(document.getElementById("search-input").Value)
+
+    If searchTerm = "" Then
+        ShowWarning "Please enter a search term."
+        Exit Sub
+    End If
+
+    likeTerm = "%" & searchTerm & "%"
+
+    query = "SELECT ""DeficiencyNumber"", ""SiteName"", ""Resource"", ""Issue_Description"", ""Status"", ""Severity"", ""RaisedByName"" " & _
+            "FROM dr_deficiency " & _
+            "WHERE CAST(""DeficiencyNumber"" AS VARCHAR) ILIKE ? " & _
+            "OR ""SiteName"" ILIKE ? " & _
+            "OR ""Resource"" ILIKE ? " & _
+            "OR ""Issue_Description"" ILIKE ? " & _
+            "OR ""RaisedByName"" ILIKE ? " & _
+            "ORDER BY ""DeficiencyNumber"" DESC " & _
+            "LIMIT 20;"
+
+    ' Note: PostgreSQL ODBC doesn't support ILIKE with parameters properly
+    ' We need to use case-insensitive LIKE with LOWER()
+    query = "SELECT ""DeficiencyNumber"", ""SiteName"", ""Resource"", ""Issue_Description"", ""Status"", ""Severity"", ""RaisedByName"" " & _
+            "FROM dr_deficiency " & _
+            "WHERE CAST(""DeficiencyNumber"" AS VARCHAR) LIKE ? " & _
+            "OR LOWER(""SiteName"") LIKE LOWER(?) " & _
+            "OR LOWER(""Resource"") LIKE LOWER(?) " & _
+            "OR LOWER(""Issue_Description"") LIKE LOWER(?) " & _
+            "OR LOWER(""RaisedByName"") LIKE LOWER(?) " & _
+            "ORDER BY ""DeficiencyNumber"" DESC " & _
+            "LIMIT 20;"
+
+    Dim params
+    params = Array(likeTerm, likeTerm, likeTerm, likeTerm, likeTerm)
+
+    Set rs = ExecuteSQL(query, params)
+
+    If rs Is Nothing Then
+        document.getElementById("search-results").innerHTML = "<p style='color:red'>Search failed.</p>"
+        Exit Sub
+    End If
+
+    html = "<h3>Search Results for: " & searchTerm & "</h3>"
+    html = html & "<table><thead><tr>" & _
+           "<th>Def. Num</th>" & _
+           "<th>Site</th>" & _
+           "<th>Resource</th>" & _
+           "<th>Description</th>" & _
+           "<th>Status</th>" & _
+           "<th>Severity</th>" & _
+           "<th>Raised By</th>" & _
+           "</tr></thead><tbody>"
+
+    Dim hasData
+    hasData = False
+
+    Do While Not rs.EOF
+        hasData = True
+        Dim defNum, site, resource, desc, status, severity, raisedBy
+        defNum = rs("DeficiencyNumber").Value
+        site = rs("SiteName").Value & ""
+        resource = rs("Resource").Value & ""
+        desc = rs("Issue_Description").Value & ""
+        status = rs("Status").Value & ""
+        severity = rs("Severity").Value & ""
+        raisedBy = rs("RaisedByName").Value & ""
+
+        ' Truncate long descriptions
+        If Len(desc) > 35 Then desc = Left(desc, 32) & "..."
+
+        Dim statusClass, severityClass
+        statusClass = "status-" & LCase(status)
+        severityClass = "severity-" & LCase(severity)
+
+        html = html & "<tr>" & _
+               "<td>" & defNum & "</td>" & _
+               "<td>" & site & "</td>" & _
+               "<td>" & resource & "</td>" & _
+               "<td>" & desc & "</td>" & _
+               "<td class='" & statusClass & "'>" & status & "</td>" & _
+               "<td class='" & severityClass & "'>" & severity & "</td>" & _
+               "<td>" & raisedBy & "</td>" & _
+               "</tr>"
+        rs.MoveNext
+    Loop
+
+    rs.Close
+    Set rs = Nothing
+
+    If Not hasData Then
+        html = html & "<tr><td colspan='7' style='text-align:center; padding: 20px;'>No results found</td></tr>"
+    End If
+
+    html = html & "</tbody></table>"
+    document.getElementById("search-results").innerHTML = html
+End Sub
+
+' ==============================================================================
+' CREATE DEFICIENCY
+' ==============================================================================
+Sub CreateDeficiency()
+    Dim siteName, defNum, resource, issueDesc, severity, raisedBy
+    Dim query, params, currentDate, currentTimestamp
+
+    siteName = Left(Trim(document.getElementById("create-site").Value), 3)
+    defNum = Trim(document.getElementById("create-defnum").Value)
+    resource = Left(Trim(document.getElementById("create-resource").Value), 5)
+    issueDesc = Trim(document.getElementById("create-desc").Value)
+    severity = Left(Trim(document.getElementById("create-severity").Value), 3)
+    raisedBy = Trim(document.getElementById("create-raisedby").Value)
+
+    ' Validation
+    If siteName = "" Or defNum = "" Or resource = "" Or issueDesc = "" Or severity = "" Or raisedBy = "" Then
+        ShowWarning "Please fill in all fields."
+        Exit Sub
+    End If
+
+    If Not IsNumeric(defNum) Then
+        ShowWarning "Deficiency Number must be numeric."
+        Exit Sub
+    End If
+
+    ' Get current date/time
+    currentDate = Year(Now) & "-" & Right("0" & Month(Now), 2) & "-" & Right("0" & Day(Now), 2)
+    currentTimestamp = Now
+
+    query = "INSERT INTO dr_deficiency (" & _
+            """SiteName"", ""DeficiencyNumber"", ""Resource"", ""Issue_Description"", ""Type"", " & _
+            """Severity"", ""CategoryName"", ""Status"", ""RaisedByName"", ""RaisedDate"", " & _
+            """EnteredByName"", ""EnteredDate"", ""DueDate"", ""DashboardVisible"", ""DeficiencyType"", " & _
+            """Is_Restricted"", ""Is_Safety"", ""Affects_Qualification"", ""UniqueDBIdentifier"", " & _
+            """fldResourceId"", ""fldRaisedById"", ""fldEnteredById"", ""fldRaisedDate"", ""fldDueDate"", " & _
+            """Customer"", ""_RaisedDate"", ""_EnteredDate"", ""_DueDate""" & _
+            ") VALUES (" & _
+            "?, ?, ?, ?, 'Standard', " & _
+            "?, 'General', 'OPEN', ?, ?, " & _
+            "'System', ?, ?, TRUE, 'Operational', " & _
+            "FALSE, FALSE, FALSE ?, " & _
+            "1, 1, 1, ?, ?, " & _
+            "'Internal', ?, ?, ?)"
+
+    params = Array(siteName, CInt(defNum), resource, issueDesc, severity, raisedBy, currentDate, _
+                   currentDate, currentDate, CInt(defNum), currentDate, currentDate, _
+                   currentTimestamp, currentTimestamp, currentDate)
+
+    On Error Resume Next
+    Dim cmd
+    Set cmd = CreateObject("ADODB.Command")
+    cmd.ActiveConnection = dbConnection
+    cmd.CommandText = query
+    cmd.CommandType = 1
+
+    ' Add all parameters
+    Dim i
+    For i = 0 To UBound(params)
+        cmd.Parameters.Append cmd.CreateParameter("@p" & i, 200, 1, 255, params(i))
+    Next
+
+    cmd.Execute
+
+    If Err.Number = 0 Then
+        ShowSuccess "Deficiency created successfully!"
+        ' Clear form
+        document.getElementById("create-site").Value = ""
+        document.getElementById("create-defnum").Value = ""
+        document.getElementById("create-resource").Value = ""
+        document.getElementById("create-desc").Value = ""
+        document.getElementById("create-severity").Value = ""
+        document.getElementById("create-raisedby").Value = ""
+    Else
+        ShowError "Failed to create deficiency: " & Err.Description
+        Err.Clear
+    End If
+End Sub
+
+' ==============================================================================
+' UPDATE DEFICIENCY
+' ==============================================================================
+Sub UpdateDeficiency()
+    Dim defNum, newStatus, query, params
+
+    defNum = Trim(document.getElementById("update-defnum").Value)
+    newStatus = Trim(document.getElementById("update-status").Value)
+
+    If defNum = "" Then
+        ShowWarning "Please enter a Deficiency Number."
+        Exit Sub
+    End If
+
+    If Not IsNumeric(defNum) Then
+        ShowWarning "Deficiency Number must be numeric."
+        Exit Sub
+    End If
+
+    If newStatus = "" Then
+        ShowWarning "Please enter a new Status."
+        Exit Sub
+    End If
+
+    query = "UPDATE dr_deficiency SET ""Status"" = ? WHERE ""DeficiencyNumber"" = ?"
+    params = Array(newStatus, CInt(defNum))
+
+    On Error Resume Next
+    Dim cmd
+    Set cmd = CreateObject("ADODB.Command")
+    cmd.ActiveConnection = dbConnection
+    cmd.CommandText = query
+    cmd.CommandType = 1
+
+    cmd.Parameters.Append cmd.CreateParameter("@p1", 200, 1, 50, newStatus)
+    cmd.Parameters.Append cmd.CreateParameter("@p2", 3, 1, , CInt(defNum))
+
+    cmd.Execute
+
+    If Err.Number = 0 Then
+        ShowSuccess "Deficiency " & defNum & " updated to " & newStatus
+        document.getElementById("update-defnum").Value = ""
+        document.getElementById("update-status").Value = ""
+    Else
+        ShowError "Failed to update: " & Err.Description
+        Err.Clear
+    End If
+End Sub
+
+' ==============================================================================
+' DELETE DEFICIENCY
+' ==============================================================================
+Sub DeleteDeficiency()
+    Dim defNum, confirmMsg, query, params
+
+    defNum = Trim(document.getElementById("delete-defnum").Value)
+
+    If defNum = "" Then
+        ShowWarning "Please enter a Deficiency Number to delete."
+        Exit Sub
+    End If
+
+    If Not IsNumeric(defNum) Then
+        ShowWarning "Deficiency Number must be numeric."
+        Exit Sub
+    End If
+
+    confirmMsg = "Are you sure you want to delete deficiency " & defNum & "? This action cannot be undone."
+
+    If MsgBox(confirmMsg, vbYesNo + vbExclamation, "Confirm Delete") = vbYes Then
+        query = "DELETE FROM dr_deficiency WHERE ""DeficiencyNumber"" = ?"
+        params = Array(CInt(defNum))
+
+        On Error Resume Next
+        Dim cmd
+        Set cmd = CreateObject("ADODB.Command")
+        cmd.ActiveConnection = dbConnection
+        cmd.CommandText = query
+        cmd.CommandType = 1
+
+        cmd.Parameters.Append cmd.CreateParameter("@p1", 3, 1, , CInt(defNum))
+
+        cmd.Execute
+
+        If Err.Number = 0 Then
+            ShowSuccess "Deficiency " & defNum & " deleted successfully."
+            document.getElementById("delete-defnum").Value = ""
+        Else
+            ShowError "Failed to delete: " & Err.Description
+            Err.Clear
+        End If
+    Else
+        ShowInfo "Deletion cancelled."
+    End If
+End Sub
+
+' ==============================================================================
+' INITIALIZATION
+' ==============================================================================
+Sub Window_Onload
+    ' Set window size
+    window.resizeTo 1250, 750
+
+    ' Center window
+    Dim screenWidth, screenHeight
+    screenWidth = window.screen.width
+    screenHeight = window.screen.height
+    window.moveTo (screenWidth - 1250) / 2, (screenHeight - 750) / 2
+
+    ' Test database connection
+    If TestConnection() Then
+        document.getElementById("conn-status").innerHTML = "✓ Connected to Database"
+        document.getElementById("conn-status").className = "connection-status connected"
+    Else
+        document.getElementById("conn-status").innerHTML = "✗ Database Connection Failed"
+        document.getElementById("conn-status").className = "connection-status disconnected"
+    End If
+
+    ' Show menu panel
+    ShowPanel "panel-menu"
+
+    ' Load initial data
+    LoadRecentDeficiencies
+End Sub
+
+Sub Window_Onunload
+    CloseConnection
+End Sub
+</script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>DR Deficiency Management System</h1>
+        <p>PostgreSQL Database Client - Windows Native</p>
+    </div>
+
+    <div id="conn-status" class="connection-status">Connecting...</div>
+
+    <div class="menu-bar">
+        <button id="btn-menu" class="menu-btn active" onclick="ShowPanel 'panel-menu'">🏠 Menu</button>
+        <button id="btn-read" class="menu-btn" onclick="ShowPanel 'panel-read'; LoadRecentDeficiencies()">📋 View Recent</button>
+        <button id="btn-search" class="menu-btn" onclick="ShowPanel 'panel-search'">🔍 Search</button>
+        <button id="btn-create" class="menu-btn" onclick="ShowPanel 'panel-create'">➕ Add New</button>
+        <button id="btn-update" class="menu-btn" onclick="ShowPanel 'panel-update'">✏️ Update</button>
+        <button id="btn-delete" class="menu-btn" onclick="ShowPanel 'panel-delete'">🗑️ Delete</button>
+    </div>
+
+    <div id="alert-area"></div>
+
+    <div class="content">
+        <!-- MENU PANEL -->
+        <div id="panel-menu" class="panel active">
+            <h2>Welcome to DR Deficiency Manager</h2>
+            <p>Select an option from the menu above to get started:</p>
+            <ul>
+                <li><strong>View Recent</strong> - Display the latest 10 deficiencies</li>
+                <li><strong>Search</strong> - Search deficiencies by ID, site, resource, or description</li>
+                <li><strong>Add New</strong> - Create a new deficiency record</li>
+                <li><strong>Update</strong> - Change the status of an existing deficiency</li>
+                <li><strong>Delete</strong> - Remove a deficiency record</li>
+            </ul>
+
+            <div id="menu-results"></div>
+        </div>
+
+        <!-- READ PANEL -->
+        <div id="panel-read" class="panel">
+            <h2>Recent Deficiencies</h2>
+            <p>Showing the 10 most recent deficiency records:</p>
+            <div id="read-results">Loading...</div>
+        </div>
+
+        <!-- SEARCH PANEL -->
+        <div id="panel-search" class="panel">
+            <h2>Search Deficiencies</h2>
+            <div class="form-group">
+                <label>Search Term:</label>
+                <div class="row">
+                    <input type="text" id="search-input" placeholder="Enter keyword..." style="flex:1;">
+                    <button class="btn" onclick="SearchDeficiencies()">Search</button>
+                </div>
+            </div>
+            <div id="search-results"></div>
+        </div>
+
+        <!-- CREATE PANEL -->
+        <div id="panel-create" class="panel">
+            <h2>Create New Deficiency</h2>
+            <div class="row">
+                <div class="col-half">
+                    <div class="form-group">
+                        <label>Site Name (max 3 chars):</label>
+                        <input type="text" id="create-site" maxlength="3" placeholder="ABC">
+                    </div>
+                </div>
+                <div class="col-half">
+                    <div class="form-group">
+                        <label>Deficiency Number:</label>
+                        <input type="text" id="create-defnum" placeholder="12345">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-half">
+                    <div class="form-group">
+                        <label>Resource (max 5 chars):</label>
+                        <input type="text" id="create-resource" maxlength="5" placeholder="RES01">
+                    </div>
+                </div>
+                <div class="col-half">
+                    <div class="form-group">
+                        <label>Severity (max 3 chars):</label>
+                        <input type="text" id="create-severity" maxlength="3" placeholder="HIGH">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Issue Description:</label>
+                <textarea id="create-desc" rows="3" placeholder="Describe the issue..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Raised By Name:</label>
+                <input type="text" id="create-raisedby" placeholder="John Doe">
+            </div>
+            <button class="btn btn-success" onclick="CreateDeficiency()">Create Deficiency</button>
+        </div>
+
+        <!-- UPDATE PANEL -->
+        <div id="panel-update" class="panel">
+            <h2>Update Deficiency Status</h2>
+            <div class="row">
+                <div class="col-half">
+                    <div class="form-group">
+                        <label>Deficiency Number to Update:</label>
+                        <input type="text" id="update-defnum" placeholder="12345">
+                    </div>
+                </div>
+                <div class="col-half">
+                    <div class="form-group">
+                        <label>New Status:</label>
+                        <input type="text" id="update-status" placeholder="CLOSED" value="CLOSED">
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-warning" onclick="UpdateDeficiency()">Update Status</button>
+        </div>
+
+        <!-- DELETE PANEL -->
+        <div id="panel-delete" class="panel">
+            <h2>Delete Deficiency</h2>
+            <p class="alert alert-warning">⚠️ This action cannot be undone!</p>
+            <div class="form-group">
+                <label>Deficiency Number to Delete:</label>
+                <input type="text" id="delete-defnum" placeholder="12345">
+            </div>
+            <button class="btn btn-danger" onclick="DeleteDeficiency()">Delete Deficiency</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
