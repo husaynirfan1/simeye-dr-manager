@@ -426,7 +426,7 @@ class Deficiency(models.Model):
     def get_absolute_url(self):
         """Get URL for viewing this deficiency"""
         from django.urls import reverse
-        return reverse('deficiencies:detail', kwargs={'pk': self.deficiency_number})
+        return reverse('deficiencies:detail', kwargs={'deficiency_number': self.deficiency_number})
 
     @property
     def parsed_actions(self):

@@ -17,7 +17,7 @@ LOGGING = {
     'disable_existing_loggers': True,
 }
 
-# Test database
+# Test database - use SQLite (inherited from base.py TEST config)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

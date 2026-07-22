@@ -454,14 +454,14 @@ def action_add(request, deficiency_number):
             else:
                 # If they are an admin, trust the name they selected from the dropdown
                 action_username = form.cleaned_data.get('username')
-            
+
             action_text = form.cleaned_data.get('action_text')
 
             # CRITICAL FIX: Clean the text so we don't break the regex parser in models.py!
             # Replace internal newlines with a spacer, and swap brackets for parentheses
             action_text = action_text.replace('\r\n', '<br>').replace('\n', '<br>')
             action_username = action_username.replace('[', '(').replace(']', ')')
-            
+
             # 3. Format the new action string
             now = datetime.now()
             timestamp = now.strftime("%b %d %Y %I:%M%p")
@@ -472,7 +472,7 @@ def action_add(request, deficiency_number):
             timestamp = re.sub(r'^0(\d):', r'\1:', timestamp)
 
             new_entry = f"[{timestamp}] [{action_username}] [{action_text}]"
-            
+
             # 4. Append to existing actiontaken
             existing_actions = deficiency.actiontaken or ''
             if existing_actions:
@@ -481,20 +481,15 @@ def action_add(request, deficiency_number):
                     new_entry = existing_actions + '\r\n' + new_entry
                 else:
                     new_entry = existing_actions + new_entry
-            
+
             # Update deficiency
             deficiency.actiontaken = new_entry
             deficiency.fld_last_action_taken_date = datetime.now().date()
-            
+
             deficiency.save(update_fields=['actiontaken', 'fld_last_action_taken_date'])
 
             messages.success(request, 'Action added successfully!')
             return redirect('deficiencies:detail', deficiency_number=deficiency_number)
     else:
-        form = ActionAddForm(user=request.user)
-
-    context = {
-        'form': form,
-        'deficiency': deficiency,
-    }
-    return render(request, 'deficiencies/action_form.html', context)
+        # GET request - redirect to detail page (action form is embedded there)
+        return redirect('deficiencies:detail', deficiency_number=deficiency_number)

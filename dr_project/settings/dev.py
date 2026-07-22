@@ -18,6 +18,12 @@ try:
 except ImportError:
     pass
 
+# Use SQLite for tests (faster and self-contained)
+DATABASES['default']['TEST'] = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': ':memory:',
+}
+
 # Logging
 LOGGING = {
     'version': 1,
