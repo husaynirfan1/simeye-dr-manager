@@ -374,13 +374,13 @@ class ActionAddViewTest(DeficiencyViewTestBase):
         """Test technicians can access action add"""
         self._login_as_technician()
         response = self.client.get(reverse('deficiencies:add_action', kwargs={'deficiency_number': 1}))
-        self.assertIn(response.status_code, [200, 404])
+        self.assertEqual(response.status_code, 302)  # Redirects to detail page
 
     def test_action_add_accessible_to_admins(self):
         """Test admins can access action add"""
         self._login_as_admin()
         response = self.client.get(reverse('deficiencies:add_action', kwargs={'deficiency_number': 1}))
-        self.assertIn(response.status_code, [200, 404])
+        self.assertEqual(response.status_code, 302)  # Redirects to detail page
 
     def test_action_add_renders_form_for_get(self):
         """Test GET request renders form"""

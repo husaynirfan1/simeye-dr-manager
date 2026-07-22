@@ -294,11 +294,11 @@ def deficiency_create(request):
        
             deficiency.save()
 
-            # Clear dashboard cache so stats update immediately
-            cache.delete('dashboard_metrics')
-
             messages.success(request, f'Deficiency #{dr_number} created successfully!')
             return redirect('deficiencies:detail', deficiency_number=dr_number)
+
+        # Clear dashboard cache so stats update immediately
+        cache.delete('dashboard_metrics')
     else:
         form = DeficiencyForm(user=request.user)
 

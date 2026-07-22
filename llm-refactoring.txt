@@ -1,0 +1,1662 @@
+# https://refactoring.guru/refactoring llms-full.txt
+
+## Code Refactoring Guide
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+![](https://refactoring.guru/images/refactoring/content/refactoring.png?id=91fe4caeecfd33ec58f3ef4af10357c9)
+
+# Refactoring
+
+[![Refactoring](https://refactoring.guru/images/refactoring/content/index/refactoring-i1.png?id=4ba85db5ddb3da0cd829bc7c0d2bf407)](https://refactoring.guru/refactoring/what-is-refactoring "Intro to refactoring")
+
+Refactoring is a systematic process of improving codewithout creating new functionality that can transforma mess into clean code and simple design.
+
+[Start from the very beginning](https://refactoring.guru/refactoring/what-is-refactoring)
+
+### Dirty Code
+
+[![Dirty Code](https://refactoring.guru/images/refactoring/content/index/refactoring-i2.png?id=dbf9c791a67f14d41250603d0bcec6fd)](https://refactoring.guru/refactoring/technical-debt "Dirty Code")
+
+Dirty code is result of inexperiencemultiplied by tight deadlines,mismanagement, and nastyshortcuts taken during thedevelopment process.
+
+[Learn more](https://refactoring.guru/refactoring/technical-debt)
+
+### Clean Code
+
+[![Clean Code](https://refactoring.guru/images/refactoring/content/index/refactoring-i3.png?id=e393546f4f2d0046fdbf98b75c6c35ea)](https://refactoring.guru/refactoring/what-is-refactoring "Clean Code")
+
+Clean code is code that is easy to read,understand and maintain. Clean code makessoftware development predictableand increases the qualityof a resulting product.
+
+[Learn more](https://refactoring.guru/refactoring/what-is-refactoring)
+
+### Refactoring Process
+
+[![Refactoring Process](https://refactoring.guru/images/refactoring/content/index/refactoring-i4.png?id=e4ba322684937f8c166dfd8f2d6ecfb1)](https://refactoring.guru/refactoring/how-to "Refactoring Process")
+
+Performing refactoring step-by-step andrunning tests after each change are keyelements of refactoring that make itpredictable and safe.
+
+[Learn more](https://refactoring.guru/refactoring/how-to)
+
+### Code Smells
+
+[![Code Smells](https://refactoring.guru/images/refactoring/content/index/refactoring-i5.png?id=acb5ca2349f078fa48ea57b5ad1ee0f5)](https://refactoring.guru/refactoring/smells "Code Smells")
+
+Code smells are indicators of problems that can beaddressed during refactoring. Code smells areeasy to spot and fix, but they may be justsymptoms of a deeper problemwith code.
+
+[Learn more](https://refactoring.guru/refactoring/smells)
+
+### Refactoring Techniques
+
+[![Refactoring Techniques](https://refactoring.guru/images/refactoring/content/index/refactoring-i6.png?id=7f2e9d6b728193f982cfc4d2dbd384d0)](https://refactoring.guru/refactoring/techniques "Refactoring Techniques")
+
+Refactoring techniques describe actual refactoringsteps. Most refactoring techniques have theirpros and cons. Therefore, each refactoringshould be properly motivated andapplied with caution.
+
+[Learn more](https://refactoring.guru/refactoring/techniques)
+
+### PremiumCourse
+
+[![Refactoring Course](https://refactoring.guru/images/refactoring/course/course-cover-en.jpg)](https://refactoring.guru/refactoring/course "Refactoring Course")
+
+21 code smells, 66 refactorings
+
+Interactive examples in Java/C#/PHP
+
+No time limits. Study at your own pace
+
+
+[Learn more about the Course](https://refactoring.guru/refactoring/course)
+
+## Refactoring Techniques
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+
+# How to refactor
+
+Refactoring should be done as a series of small changes, each of which makes the existing code slightly better while still leaving the program in working order.
+
+## Checklist of refactoring done _right way_
+
+#### The code should become cleaner.
+
+If the code remains just as unclean after refactoring... well, I’m sorry, but you’ve just wasted an hour of your life. Try to figure out why this happened.
+
+It frequently happens when you move away from refactoring with small changes and mix a whole bunch of refactorings into one big change. So it’s very easy to lose your mind, especially if you have a time limit.
+
+But it can also happen when working with extremely sloppy code. Whatever you improve, the code as a whole remains a disaster.
+
+In this case, it’s worthwhile to think about completely rewriting parts of the code. But before that, you should have written tests and set aside a good chunk of time. Otherwise, you’ll end up with the kinds of results we talked about in the first paragraph.
+
+#### New functionality shouldn’t be created during refactoring.
+
+Don’t mix refactoring and direct development of new features. Try to separate these processes at least within the confines of individual commits.
+
+#### All existing tests must pass after refactoring.
+
+There are two cases when tests can break down after refactoring:
+
+- **You made an error during refactoring.** This one is a no-brainer: go ahead and fix the error.
+
+- **Your tests were too low-level.** For example, you were testing private methods of classes.
+
+In this case, the tests are to blame. You can either refactor the tests themselves or write an entirely new set of higher-level tests. A great way to avoid this kind of a situation is to write [BDD-style](https://refactoring.guru/refactoring/bdd) tests.
+
+## Object-Orientation Abusers
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+/ [Code Smells](https://refactoring.guru/refactoring/smells)
+
+# Object-Orientation Abusers
+
+All these smells are incomplete or incorrect application of object-oriented programming principles.
+
+[Switch Statements](https://refactoring.guru/smells/switch-statements)
+
+You have a complex `switch` operator or sequence of `if` statements.
+
+[Temporary Field](https://refactoring.guru/smells/temporary-field)
+
+Temporary fields get their values (and thus are needed by objects) only under certain circumstances. Outside of these circumstances, they’re empty.
+
+[Refused Bequest](https://refactoring.guru/smells/refused-bequest)
+
+If a subclass uses only some of the methods and properties inherited from its parents, the hierarchy is off-kilter. The unneeded methods may simply go unused or be redefined and give off exceptions.
+
+[Alternative Classes with Different Interfaces](https://refactoring.guru/smells/alternative-classes-with-different-interfaces)
+
+Two classes perform identical functions but have different method names.
+
+## Refactoring Course Overview
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+Ce produit n'est disponible qu'en anglais pour le moment. Nous avons prévu de le traduire en **français** plus tard et vous l'obtiendrez gratuitement si vous le commandez maintenant.
+
+
+Este producto solo está disponible en inglés en este momento. Si lo compra ahora, tendrá acceso a la versión en español cuando se lance.
+
+
+Este produto está disponível apenas em inglês no momento. Se você o comprar agora, terá acesso à versão em português quando for lançada.
+
+
+Ten produkt jest obecnie dostępny tylko w języku angielskim. Jeśli kupisz go teraz, będziesz mieć dostęp do polskiej wersji, gdy zostanie wydana.
+
+
+目前我们的产品仅支持英文，其中文版本将很快推出。当前的所有客户都将在中文版发布后都可免费访问。
+
+
+이 제품은 현재 영어로만 제공됩니다. 나중에 **한국어** 로 번역할 계획이며 지금 제품을 주문하면 번역된 버전을 무료로 받으실 수 있습니다.
+
+
+この商品は現時点では英語版のみ入手可能です。 後ほど **日本語** に翻訳する予定です。今すぐご注文されると、翻訳版を無料で入手できます。
+
+
+# Dive Into **REFACTORING**
+
+An online course about code smells and refactoring
+
+[![](https://refactoring.guru/images/refactoring/course/course-cover-en.jpg)](https://refactoring.guru/refactoring/course#buy-now)
+
+Summer SALE
+
+$80.00
+
+$49.95
+
+plus local tax
+
+including local tax
+
+[Buy now](https://refactoring.guru/refactoring/course#buy-now) [Buy as a gift](https://refactoring.guru/refactoring/course#buy-now) [Buy for my team](https://refactoring.guru/refactoring/course#buy-team)
+
+> Hi, my name is Alexander Shvets, I'm the creator of this website. After two years of work, I'm happy to present to you my course on refactoring, which will make you a better programmer.
+>
+> I have been programming since I was 13. Windows didn't even have a Start button back then. Since that time, I have worked at five companies, learned a half a dozen programming languages and launched several successful projects.
+>
+> In this course, I will share my knowledge with you and teach you to:
+>
+> - See the difference between beautiful and ugly code.
+> - Improve ugly code, even where you thought it was impossible.
+> - Change the code in such a way that it doesn't break other parts of your program.
+>
+>
+> You will love the course if you have ever felt like this [cat\\
+> here](https://refactoring.guru/refactoring/course#) sitting in front of a broken build.
+>
+>  Your browser does not support HTML video.
+
+## What’s inside?
+
+The course teaches you about **21**
+**smells of bad code** and **66 refactoring techniques** to fix them.
+
+
+Each chapter includes examples in
+**Java, C# and PHP**.
+
+The refactoring techniques are
+illustrated with **live examples**.
+These are much easier to follow than static code—and more fun, too!
+
+
+The course can be
+downloaded for **offline use** as an ebook in PDF, EPUB, MOBI
+formats.
+
+The course doesn't have any time restrictions. You can pass it at a convenient time at your own pace any number of times you want. On average, it takes about 8 hours to pass the whole course.
+
+## Screenshots
+
+![Home page](https://refactoring.guru/images/content-public/landings/screenshots/home-en-thumb.png)
+
+The home page with links to the forum and
+cheat sheets.
+
+refactoring.guru/home
+
+![Home page](https://refactoring.guru/images/content-public/landings/screenshots/home-en.png)
+
+![First steps](https://refactoring.guru/images/content-public/landings/screenshots/start-en-thumb.png)
+
+First steps into the course.
+
+refactoring.guru/first-steps
+
+Your browser does not support HTML video.
+
+
+![A code smell](https://refactoring.guru/images/content-public/landings/screenshots/smell-en-thumb.png)
+
+Going through one of the code smells.
+
+refactoring.guru/code-smell
+
+Your browser does not support HTML video.
+
+
+![Lots of content](https://refactoring.guru/images/content-public/landings/screenshots/story-en-thumb.png)
+
+The course covers 21 code smells and 66
+refactorings.
+
+refactoring.guru/story-mode
+
+Your browser does not support HTML video.
+
+
+![A live example](https://refactoring.guru/images/content-public/landings/screenshots/live-example-en-thumb.png)
+
+Live examples show you how to apply refactorings step-by-step.
+
+refactoring.guru/live-example
+
+Your browser does not support HTML video.
+
+
+![Live example diff](https://refactoring.guru/images/content-public/landings/screenshots/live-example-diff-en-thumb.png)
+
+Each example is followed by a diff view between
+starting and resulting code.
+
+refactoring.guru/live-example-diff
+
+![Live example diff](https://refactoring.guru/images/content-public/landings/screenshots/live-example-diff-en.png)
+
+## Why would I buy this course instead of a thick book about  refactoring?
+
+This course is written in
+simple, accessible language with no academic
+jargon. Direct and to the point with a minimum of fluff.
+
+It’s optimized for tablet
+viewing. So go ahead and read it on your
+couch while sipping some tasty cappuccino.
+
+Interactive elements of the
+course help to keep you on your toes,
+unlike ordinary books that lull you to sleep after ten minutes.
+
+Oh and did I mention the live
+interactive examples? Yes I did, but
+they’re too cool not to mention again!
+
+### Certificate of completion
+
+After finishing the course you'll get an electronic certificate of completion. While it certainly looks awesome on the wall, you could also put it in your CV, increasing your chances during the next job interview.
+
+[![](https://refactoring.guru/images/content-public/landings/certificate-en.png)](https://refactoring.guru/cert/r/MQ) Example of the certificate
+
+![Satisfaction guaranteed](https://refactoring.guru/images/content-public/landings/100-satisfaction-en.png)
+
+## 100% Satisfaction Guarantee
+
+Your purchase of the course is absolutely risk-free. If within a
+month you decide that you are unhappy
+with
+your purchase, I will immediately refund all your money, no
+questions asked.
+
+Summer SALE
+
+$80.00
+
+$49.95
+
+plus local tax
+
+including local tax
+
+[Buy now\\
+\\
+\\
+(this price won't last forever)](https://refactoring.guru/refactoring/course#buy-now)
+
+- Unlimited access to the **Dive Into Refactoring** course.
+- Source of a great programming experience.
+- Printable refactoring cheat-sheets.
+- And all of this with a 30-day money-back guarantee.
+
+## Here's what other people say
+
+Facebook[Write a review](https://refactoring.guru/login?destination=https%3A%2F%2Frefactoring.userecho.com%2F%3Fshow_feedback_form%3Dtrue)
+
+I didn't have a chance to ran through the whole course, so I still have some lessons ahead. Overall I really like the course, it's written in understandable way, contains lot of good ideas. I noticed that I started to use Extract Method really often. As well as substitution of complex logical "IF" statements by method that returns bool. Code is really much more readable and don't need to be commented. Don't know what to improve, maybe bigger variety of code snippets. I noticed that snippets are reused again and again over the course and I would welcome to see some different scenarios.. Don't know if you get the point, simple not to reuse the same snippet over and over for similar use cases.
+
+Peter Dubovan
+
+Slovakia
+
+I like the site, and the information is good I like the way it is organized in stories and how you can see in the sample code how to apply a solution. I would like to have something like a playground so I can actually write and refactorize code, and check the results against the recommended solution (similar to what udacity has on their python courses)
+
+Edison Martinez
+
+Ecuador
+
+I loved the refactoring course and especially the online aspect of it. Well done with respect to content and easy to understand material. I have bought all your work in the past except for UML. Keep on doing good work. It helps me understand the material properly and I can apply at work as well. In terms of new suggestions: Come up with a nice tutorial or a book on Java 8 and Java 9 with focus on functional programming, modules and concurrency. I am sure it will do well.
+
+Yogesh Sagar
+
+Canada
+
+I've just started with the course. I like the boxes explaining the solutions. If anything I would prefer small exampeles of actual code.
+
+Otherwise I really like the Course and you've done an awesome job with this.
+
+Joel Nordh
+
+Sweden
+
+I've only gone through a portion of the course, reading through it piece by piece when i have free time. I really like the course and I think it's helping me become a better programmer. It's already helped me with refactoring my code. I think it's great and more people should know about it.
+
+Things I like are:
+
+
+\- Very easy to understand and great examples.
+
+
+\- Easy to understand why refactoring practices exist.
+
+Things I don't like are:
+
+
+\- I bought the premium version because I wanted access to the practice code. But it seems like I can't get to the without reading through all the refactoring practices and code smells portion yet (or maybe it just isn't clear to me on how to access the practice portion).
+
+
+\- A lot of the refactoring methods are reused in different code smells. I understand that it's a way to fix the code smell, but it can get a little repetitive reading the same thing over and over.
+
+If I had any suggestions on how to improve the site, I would say that a way to access just the code examples would be nice. And also maybe having some refactoring methods for Javascript or ES6 with examples as well (I'm a front end developer so I work a lot with JS). Although the second suggestion isn't as important because these methods can applied and translated across languages fairly easily.
+
+Jeremy Field
+
+USA
+
+It felt a bit boring to read. It did not feel so engaging. I think some design patterns(fixes) didn't have good examples given.
+
+
+I liked the way it is organized and linked between different sections.
+
+Rineez Ahmed
+
+India
+
+I think it's awesome!! Right now I'm working my way through reading the sourcemaking website. I started working on some of the refactoring guru course and will finish it once I finish sourcemaking.
+
+Allen Mackley
+
+USA
+
+Yesterday i finished the course, i find it a good alternative for reading books. Especially for running source examples is a great idea. Working on the course was a good alternation at work. The design pattern page is a good help at work, especially the c# examples.
+
+One thing i missed, after finishing the course, a certificate for successful partcipating the course should be included. After each seminar/course, i get a paper for participation. For example, if you pass the PSM1 test in scrum.org, you can download a certificate.
+
+**Note:** since January, 2019, everyone who has finished the course can download a certificate of completion.
+
+
+Andreas Lamparter
+
+Germany
+
+1\. In my opinion its very clever that refactoring course is structured around code smells - makes it easier to remember code smells and the ways they can be resolved.
+
+2\. The structure, the flow of the course and the small code snippets with the problem and the solution is among the things i liked a lot. Did not like so much the red colour that dominates in the course but that's a matter of personal preference, maybe it kind of 'forces' you to move towards the end of the course faster that other colours.
+
+3\. One thing i would really like to see (i have not reached the end of the course so maybe its already there and i just did not see it yet) is a set of exercises: one code snippet when you are given the problematic code that needs refactoring, a small description of the solution that we should follow and then in the next code snippet we get to write the refactored code based on the suggested solution.
+
+Aimilia Kelaidi
+
+Netherlands
+
+I have started to look through the course. I was really happy with the content and recommended it to my team.
+
+Jonathan Rhodes
+
+Australia
+
+I'm very happy with the course! I had a chance to go through the different refactorings and now I am working on the design patterns.
+
+Bryan Andrade
+
+USA
+
+I completed the course at a leisurely pace in about a
+week. I liked how the smells link to
+the
+relevant refactoring methods and vice versa.
+
+Michael Ershov
+
+Moscow, Russian Federation
+
+Awesome material, thank you! I use the standard
+refactoring methods in Idea pretty often but
+I
+did not realize there are so many of them. Of the
+new ones, my favorite is Replace Nested
+Conditional with Guard Clauses.
+
+Nikolay Tarasenko
+
+Odessa, USA
+
+I liked how the material was structured in one story
+line. I know you just got started but my
+suggestion would be to add examples in Swift
+too.
+
+Victor van der Knaas
+
+Rotterdam, Netherlands
+
+[Show next review (11)](https://refactoring.guru/refactoring/course#)
+
+## Frequently asked questions
+
+What do I receive after I pay?
+
+
+You receive a username and password for an account on this site.
+Then you log in and start the course.
+Your account will also have links for downloading bonus
+materials.
+
+
+How long
+do I get access for? Is there a time limit?
+
+
+There is **no time limit**, and no monthly/yearly fee to keep
+access. Log in whenever you like and the
+course will be there for you!
+
+
+What payment methods do you accept?
+
+You can pay with credit/debit cards (Visa, MasterCard, AmEx, Discover, JCB, and more), PayPal, Apple Pay, Google Pay, iDeal, NetBanking, WeChat Pay, and Alipay. You can also pay using cryptocurrency.
+
+How do you keep my data safe?
+
+Your payment information is encrypted and sent directly to the payment gateway. It is never transmitted to or stored on our server.
+
+Can I get
+my money back if I’m dissatisfied with the course?
+
+
+Yes! If you aren't satisfied, please send an
+email to support@refactoring.guru with a copy of your receipt and you will be refunded, no questions asked.
+
+
+Can I get an invoice after purchase?
+
+
+Yes! You will be able to download the invoice after purchase.
+
+Will you translate the course to Spanish, Portuguese, Chinese, etc.?
+
+
+We plan to translate the course on more languages after author finishes the second edition of the course. Still, note that if you order the course now, you will be able to access the translated version once it's released.
+
+
+## Have more questions?
+
+[Send us a forum message](https://feedback.refactoring.guru/?lang=en&show_feedback_form_private=true) or email [support@refactoring.guru](mailto:support@refactoring.guru). We usually respond within a few hours.
+
+[![](https://refactoring.guru/images/refactoring/course/course-cover-en.jpg)](https://refactoring.guru/refactoring/course#buy-now)
+
+Summer SALE
+
+$80.00
+
+$49.95
+
+plus local tax
+
+including local tax
+
+[Buy now](https://refactoring.guru/refactoring/course#buy-now) [Buy as a gift](https://refactoring.guru/refactoring/course#buy-now) [Buy for my team](https://refactoring.guru/refactoring/course#buy-team)
+
+![](https://refactoring.guru/images/content-public/landings/ipadiphone.png)
+
+Optimized for tablets
+
+![](https://refactoring.guru/images/content-public/landings/satisf.gif)
+
+30-day money-back guarantee
+
+## Understanding Code Smells
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+
+# Code Smells
+
+— What? How can code "smell"??
+
+— Well it doesn't have a nose... but it definitely can stink!
+
+![](https://refactoring.guru/images/refactoring/content/catalog/bloaters.png?id=32a44a371122874ebd1e8a2cbb9202b9)
+
+### [Bloaters](https://refactoring.guru/refactoring/smells/bloaters)
+
+Bloaters are code, methods and classes that have increased to such gargantuan proportions that they are hard to work with. Usually these smells do not crop up right away, rather they accumulate over time as the program evolves (and especially when nobody makes an effort to eradicate them).
+
+- [Long Method](https://refactoring.guru/smells/long-method)
+- [Large Class](https://refactoring.guru/smells/large-class)
+
+- [Primitive Obsession](https://refactoring.guru/smells/primitive-obsession)
+- [Long Parameter List](https://refactoring.guru/smells/long-parameter-list)
+
+- [Data Clumps](https://refactoring.guru/smells/data-clumps)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/oo-abusers.png?id=dee31050499d8d6b5a2d5b2e84e68cc8)
+
+### [Object-Orientation Abusers](https://refactoring.guru/refactoring/smells/oo-abusers)
+
+All these smells are incomplete or incorrect application of object-oriented programming principles.
+
+- [Alternative Classes with Different Interfaces](https://refactoring.guru/smells/alternative-classes-with-different-interfaces)
+
+- [Refused Bequest](https://refactoring.guru/smells/refused-bequest)
+- [Switch Statements](https://refactoring.guru/smells/switch-statements)
+
+- [Temporary Field](https://refactoring.guru/smells/temporary-field)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/change-preventers.png?id=db5f332e55fd4b993e15c419baf1db41)
+
+### [Change Preventers](https://refactoring.guru/refactoring/smells/change-preventers)
+
+These smells mean that if you need to change something in one place in your code, you have to make many changes in other places too. Program development becomes much more complicated and expensive as a result.
+
+- [Divergent Change](https://refactoring.guru/smells/divergent-change)
+
+- [Parallel Inheritance Hierarchies](https://refactoring.guru/smells/parallel-inheritance-hierarchies)
+
+- [Shotgun Surgery](https://refactoring.guru/smells/shotgun-surgery)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/dispensables.png?id=b1072dc9efcf8c0374ddbd7e0b8d496f)
+
+### [Dispensables](https://refactoring.guru/refactoring/smells/dispensables)
+
+A dispensable is something pointless and unneeded whose absence would make the code cleaner, more efficient and easier to understand.
+
+- [Comments](https://refactoring.guru/smells/comments)
+- [Duplicate Code](https://refactoring.guru/smells/duplicate-code)
+
+- [Data Class](https://refactoring.guru/smells/data-class)
+- [Dead Code](https://refactoring.guru/smells/dead-code)
+
+- [Lazy Class](https://refactoring.guru/smells/lazy-class)
+- [Speculative Generality](https://refactoring.guru/smells/speculative-generality)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/couplers.png?id=1a0e96c005372053d5823ccb5282ae7d)
+
+### [Couplers](https://refactoring.guru/refactoring/smells/couplers)
+
+All the smells in this group contribute to excessive coupling between classes or show what happens if coupling is replaced by excessive delegation.
+
+- [Feature Envy](https://refactoring.guru/smells/feature-envy)
+- [Inappropriate Intimacy](https://refactoring.guru/smells/inappropriate-intimacy)
+
+- [Incomplete Library Class](https://refactoring.guru/smells/incomplete-library-class)
+- [Message Chains](https://refactoring.guru/smells/message-chains)
+
+- [Middle Man](https://refactoring.guru/smells/middle-man)
+
+## Refactoring Catalog
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+
+# Catalog of Refactoring
+
+## Code Smells
+
+— What? How can code "smell"??
+
+— Well it doesn't have a nose... but it definitely can stink!
+
+![](https://refactoring.guru/images/refactoring/content/catalog/bloaters.png?id=32a44a371122874ebd1e8a2cbb9202b9)
+
+### [Bloaters](https://refactoring.guru/refactoring/smells/bloaters)
+
+Bloaters are code, methods and classes that have increased to such gargantuan proportions that they are hard to work with. Usually these smells do not crop up right away, rather they accumulate over time as the program evolves (and especially when nobody makes an effort to eradicate them).
+
+- [Long Method](https://refactoring.guru/smells/long-method)
+- [Large Class](https://refactoring.guru/smells/large-class)
+
+- [Primitive Obsession](https://refactoring.guru/smells/primitive-obsession)
+- [Long Parameter List](https://refactoring.guru/smells/long-parameter-list)
+
+- [Data Clumps](https://refactoring.guru/smells/data-clumps)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/oo-abusers.png?id=dee31050499d8d6b5a2d5b2e84e68cc8)
+
+### [Object-Orientation Abusers](https://refactoring.guru/refactoring/smells/oo-abusers)
+
+All these smells are incomplete or incorrect application of object-oriented programming principles.
+
+- [Alternative Classes with Different Interfaces](https://refactoring.guru/smells/alternative-classes-with-different-interfaces)
+
+- [Refused Bequest](https://refactoring.guru/smells/refused-bequest)
+- [Switch Statements](https://refactoring.guru/smells/switch-statements)
+
+- [Temporary Field](https://refactoring.guru/smells/temporary-field)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/change-preventers.png?id=db5f332e55fd4b993e15c419baf1db41)
+
+### [Change Preventers](https://refactoring.guru/refactoring/smells/change-preventers)
+
+These smells mean that if you need to change something in one place in your code, you have to make many changes in other places too. Program development becomes much more complicated and expensive as a result.
+
+- [Divergent Change](https://refactoring.guru/smells/divergent-change)
+
+- [Parallel Inheritance Hierarchies](https://refactoring.guru/smells/parallel-inheritance-hierarchies)
+
+- [Shotgun Surgery](https://refactoring.guru/smells/shotgun-surgery)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/dispensables.png?id=b1072dc9efcf8c0374ddbd7e0b8d496f)
+
+### [Dispensables](https://refactoring.guru/refactoring/smells/dispensables)
+
+A dispensable is something pointless and unneeded whose absence would make the code cleaner, more efficient and easier to understand.
+
+- [Comments](https://refactoring.guru/smells/comments)
+- [Duplicate Code](https://refactoring.guru/smells/duplicate-code)
+
+- [Data Class](https://refactoring.guru/smells/data-class)
+- [Dead Code](https://refactoring.guru/smells/dead-code)
+
+- [Lazy Class](https://refactoring.guru/smells/lazy-class)
+- [Speculative Generality](https://refactoring.guru/smells/speculative-generality)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/couplers.png?id=1a0e96c005372053d5823ccb5282ae7d)
+
+### [Couplers](https://refactoring.guru/refactoring/smells/couplers)
+
+All the smells in this group contribute to excessive coupling between classes or show what happens if coupling is replaced by excessive delegation.
+
+- [Feature Envy](https://refactoring.guru/smells/feature-envy)
+- [Inappropriate Intimacy](https://refactoring.guru/smells/inappropriate-intimacy)
+
+- [Incomplete Library Class](https://refactoring.guru/smells/incomplete-library-class)
+- [Message Chains](https://refactoring.guru/smells/message-chains)
+
+- [Middle Man](https://refactoring.guru/smells/middle-man)
+
+## Refactoring Techniques
+
+![](https://refactoring.guru/images/refactoring/content/catalog/composing-methods.png?id=953854e802753495812cb9b2686765f7)
+
+### [Composing Methods](https://refactoring.guru/refactoring/techniques/composing-methods)
+
+Much of refactoring is devoted to correctly composing methods. In most cases, excessively long methods are the root of all evil. The vagaries of code inside these methods conceal the execution logic and make the method extremely hard to understand—and even harder to change.
+
+The refactoring techniques in this group streamline methods, remove code duplication, and pave the way for future improvements.
+
+- [Extract Method](https://refactoring.guru/extract-method)
+- [Inline Method](https://refactoring.guru/inline-method)
+- [Extract Variable](https://refactoring.guru/extract-variable)
+- [Inline Temp](https://refactoring.guru/inline-temp)
+
+- [Replace Temp with Query](https://refactoring.guru/replace-temp-with-query)
+- [Split Temporary Variable](https://refactoring.guru/split-temporary-variable)
+- [Remove Assignments to Parameters](https://refactoring.guru/remove-assignments-to-parameters)
+
+- [Replace Method with Method Object](https://refactoring.guru/replace-method-with-method-object)
+- [Substitute Algorithm](https://refactoring.guru/substitute-algorithm)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/moving-features-between-objects.png?id=8ba49e26381112792e32172edf220524)
+
+### [Moving Features between Objects](https://refactoring.guru/refactoring/techniques/moving-features-between-objects)
+
+Even if you have distributed functionality among different classes in a less-than-perfect way, there is still hope.
+
+These refactoring techniques show how to safely move functionality between classes, create new classes, and hide implementation details from public access.
+
+- [Move Method](https://refactoring.guru/move-method)
+- [Move Field](https://refactoring.guru/move-field)
+- [Extract Class](https://refactoring.guru/extract-class)
+- [Inline Class](https://refactoring.guru/inline-class)
+
+- [Hide Delegate](https://refactoring.guru/hide-delegate)
+- [Remove Middle Man](https://refactoring.guru/remove-middle-man)
+
+- [Introduce Foreign Method](https://refactoring.guru/introduce-foreign-method)
+- [Introduce Local Extension](https://refactoring.guru/introduce-local-extension)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/organizing-data.png?id=0be19b5980545dccb976d377ec731d30)
+
+### [Organizing Data](https://refactoring.guru/refactoring/techniques/organizing-data)
+
+These refactoring techniques help with data handling, replacing primitives with rich class functionality. Another important result is untangling of class associations, which makes classes more portable and reusable.
+
+- [Change Value to Reference](https://refactoring.guru/change-value-to-reference)
+- [Change Reference to Value](https://refactoring.guru/change-reference-to-value)
+- [Duplicate Observed Data](https://refactoring.guru/duplicate-observed-data)
+- [Self Encapsulate Field](https://refactoring.guru/self-encapsulate-field)
+- [Replace Data Value with Object](https://refactoring.guru/replace-data-value-with-object)
+- [Replace Array with Object](https://refactoring.guru/replace-array-with-object)
+
+- [Change Unidirectional Association to Bidirectional](https://refactoring.guru/change-unidirectional-association-to-bidirectional)
+- [Change Bidirectional Association to Unidirectional](https://refactoring.guru/change-bidirectional-association-to-unidirectional)
+- [Encapsulate Field](https://refactoring.guru/encapsulate-field)
+- [Encapsulate Collection](https://refactoring.guru/encapsulate-collection)
+- [Replace Magic Number with Symbolic Constant](https://refactoring.guru/replace-magic-number-with-symbolic-constant)
+
+- [Replace Type Code with Class](https://refactoring.guru/replace-type-code-with-class)
+- [Replace Type Code with Subclasses](https://refactoring.guru/replace-type-code-with-subclasses)
+- [Replace Type Code with State/Strategy](https://refactoring.guru/replace-type-code-with-state-strategy)
+- [Replace Subclass with Fields](https://refactoring.guru/replace-subclass-with-fields)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/simplifying-conditional-expressions.png?id=a551572d527946cd03b647098b67776d)
+
+### [Simplifying Conditional Expressions](https://refactoring.guru/refactoring/techniques/simplifying-conditional-expressions)
+
+Conditionals tend to get more and more complicated in their logic over time, and there are yet more techniques to combat this as well.
+
+- [Consolidate Conditional Expression](https://refactoring.guru/consolidate-conditional-expression)
+- [Consolidate Duplicate Conditional Fragments](https://refactoring.guru/consolidate-duplicate-conditional-fragments)
+- [Decompose Conditional](https://refactoring.guru/decompose-conditional)
+
+- [Replace Conditional with Polymorphism](https://refactoring.guru/replace-conditional-with-polymorphism)
+- [Remove Control Flag](https://refactoring.guru/remove-control-flag)
+- [Replace Nested Conditional with Guard Clauses](https://refactoring.guru/replace-nested-conditional-with-guard-clauses)
+
+- [Introduce Null Object](https://refactoring.guru/introduce-null-object)
+- [Introduce Assertion](https://refactoring.guru/introduce-assertion)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/simplifying-method-calls.png?id=0af0ac74a5d0d7f8ac33a58b4a479ee6)
+
+### [Simplifying Method Calls](https://refactoring.guru/refactoring/techniques/simplifying-method-calls)
+
+These techniques make method calls simpler and easier to understand. This, in turn, simplifies the interfaces for interaction between classes.
+
+- [Add Parameter](https://refactoring.guru/add-parameter)
+- [Remove Parameter](https://refactoring.guru/remove-parameter)
+- [Rename Method](https://refactoring.guru/rename-method)
+- [Separate Query from Modifier](https://refactoring.guru/separate-query-from-modifier)
+- [Parameterize Method](https://refactoring.guru/parameterize-method)
+
+- [Introduce Parameter Object](https://refactoring.guru/introduce-parameter-object)
+- [Preserve Whole Object](https://refactoring.guru/preserve-whole-object)
+- [Remove Setting Method](https://refactoring.guru/remove-setting-method)
+- [Replace Parameter with Explicit Methods](https://refactoring.guru/replace-parameter-with-explicit-methods)
+- [Replace Parameter with Method Call](https://refactoring.guru/replace-parameter-with-method-call)
+
+- [Hide Method](https://refactoring.guru/hide-method)
+- [Replace Constructor with Factory Method](https://refactoring.guru/replace-constructor-with-factory-method)
+- [Replace Error Code with Exception](https://refactoring.guru/replace-error-code-with-exception)
+- [Replace Exception with Test](https://refactoring.guru/replace-exception-with-test)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/dealing-with-generalization.png?id=56357b115153175b2eb40563d936087c)
+
+### [Dealing with Generalization](https://refactoring.guru/refactoring/techniques/dealing-with-generalization)
+
+Abstraction has its own group of refactoring techniques, primarily associated with moving functionality along the class inheritance hierarchy, creating new classes and interfaces, and replacing inheritance with delegation and vice versa.
+
+- [Pull Up Field](https://refactoring.guru/pull-up-field)
+- [Pull Up Method](https://refactoring.guru/pull-up-method)
+- [Pull Up Constructor Body](https://refactoring.guru/pull-up-constructor-body)
+- [Push Down Field](https://refactoring.guru/push-down-field)
+- [Push Down Method](https://refactoring.guru/push-down-method)
+
+- [Extract Subclass](https://refactoring.guru/extract-subclass)
+- [Extract Superclass](https://refactoring.guru/extract-superclass)
+- [Extract Interface](https://refactoring.guru/extract-interface)
+- [Collapse Hierarchy](https://refactoring.guru/collapse-hierarchy)
+
+- [Form Template Method](https://refactoring.guru/form-template-method)
+- [Replace Inheritance with Delegation](https://refactoring.guru/replace-inheritance-with-delegation)
+- [Replace Delegation with Inheritance](https://refactoring.guru/replace-delegation-with-inheritance)
+
+## Couplers Overview
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+/ [Code Smells](https://refactoring.guru/refactoring/smells)
+
+# Couplers
+
+All the smells in this group contribute to excessive coupling between classes or show what happens if coupling is replaced by excessive delegation.
+
+[Feature Envy](https://refactoring.guru/smells/feature-envy)
+
+A method accesses the data of another object more than its own data.
+
+[Inappropriate Intimacy](https://refactoring.guru/smells/inappropriate-intimacy)
+
+One class uses the internal fields and methods of another class.
+
+[Message Chains](https://refactoring.guru/smells/message-chains)
+
+In code you see a series of calls resembling `$a->b()->c()->d()`
+
+[Middle Man](https://refactoring.guru/smells/middle-man)
+
+If a class performs only one action, delegating work to another class, why does it exist at all?
+
+## Code Change Challenges
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+/ [Code Smells](https://refactoring.guru/refactoring/smells)
+
+# Change Preventers
+
+These smells mean that if you need to change something in one place in your code, you have to make many changes in other places too. Program development becomes much more complicated and expensive as a result.
+
+[Divergent Change](https://refactoring.guru/smells/divergent-change)
+
+You find yourself having to change many unrelated methods when you make changes to a class. For example, when adding a new product type you have to change the methods for finding, displaying, and ordering products.
+
+[Shotgun Surgery](https://refactoring.guru/smells/shotgun-surgery)
+
+Making any modifications requires that you make many small changes to many different classes.
+
+[Parallel Inheritance Hierarchies](https://refactoring.guru/smells/parallel-inheritance-hierarchies)
+
+Whenever you create a subclass for a class, you find yourself needing to create a subclass for another class.
+
+## Code Smells Overview
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+/ [Code Smells](https://refactoring.guru/refactoring/smells)
+
+# Dispensables
+
+A dispensable is something pointless and unneeded whose absence would make the code cleaner, more efficient and easier to understand.
+
+[Comments](https://refactoring.guru/smells/comments)
+
+A method is filled with explanatory comments.
+
+[Duplicate Code](https://refactoring.guru/smells/duplicate-code)
+
+Two code fragments look almost identical.
+
+[Lazy Class](https://refactoring.guru/smells/lazy-class)
+
+Understanding and maintaining classes always costs time and money. So if a class doesn’t do enough to earn your attention, it should be deleted.
+
+[Data Class](https://refactoring.guru/smells/data-class)
+
+A data class refers to a class that contains only fields and crude methods for accessing them (getters and setters). These are simply containers for data used by other classes. These classes don’t contain any additional functionality and can’t independently operate on the data that they own.
+
+[Dead Code](https://refactoring.guru/smells/dead-code)
+
+A variable, parameter, field, method or class is no longer used (usually because it’s obsolete).
+
+[Speculative Generality](https://refactoring.guru/smells/speculative-generality)
+
+There’s an unused class, method, field or parameter.
+
+## Code Bloat Analysis
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+/ [Code Smells](https://refactoring.guru/refactoring/smells)
+
+# Bloaters
+
+Bloaters are code, methods and classes that have increased to such gargantuan proportions that they’re hard to work with. Usually these smells don’t crop up right away, rather they accumulate over time as the program evolves (and especially when nobody makes an effort to eradicate them).
+
+[Long Method](https://refactoring.guru/smells/long-method)
+
+A method contains too many lines of code. Generally, any method longer than ten lines should make you start asking questions.
+
+[Large Class](https://refactoring.guru/smells/large-class)
+
+A class contains many fields/methods/lines of code.
+
+[Primitive Obsession](https://refactoring.guru/smells/primitive-obsession)
+
+- Use of primitives instead of small objects for simple tasks (such as currency, ranges, special strings for phone numbers, etc.)
+- Use of constants for coding information (such as a constant `USER_ADMIN_ROLE = 1` for referring to users with administrator rights.)
+- Use of string constants as field names for use in data arrays.
+
+[Long Parameter List](https://refactoring.guru/smells/long-parameter-list)
+
+More than three or four parameters for a method.
+
+[Data Clumps](https://refactoring.guru/smells/data-clumps)
+
+Sometimes different parts of the code contain identical groups of variables (such as parameters for connecting to a database). These clumps should be turned into their own classes.
+
+## Other Code Smells
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+/ [Code Smells](https://refactoring.guru/refactoring/smells)
+
+# Other Smells
+
+Below are the smells which don’t fall into any broad category.
+
+[Incomplete Library Class](https://refactoring.guru/smells/incomplete-library-class)
+
+Sooner or later, [libraries](https://en.wikipedia.org/wiki/Library_(computing)) stop meeting user needs. The only solution to the problem—changing the library—is often impossible since the library is read-only.
+
+## Technical Debt Explained
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+
+# Technical debt
+
+Everyone does their best to write excellent code from scratch. There probably isn’t a programmer out there who intentionally writes unclean code to the detriment of the project. But at what point does clean code become unclean?
+
+The metaphor of “technical debt” in regards to unclean code was originally suggested by Ward Cunningham.
+
+If you get a loan from a bank, this allows you to make purchases faster. You pay extra for expediting the process - you don’t just pay off the principal, but also the additional interest on the loan. Needless to say, you can even rack up so much interest that the amount of interest exceeds your total income, making full repayment impossible.
+
+The same thing can happen with code. You can temporarily speed up without writing tests for new features, but this will gradually slow your progress every day until you eventually pay off the debt by writing tests.
+
+## Causes of technical debt
+
+#### Business pressure
+
+Sometimes business circumstances might force you to roll out features before they’re completely finished. In this case, patches and kludges will appear in the code to hide the unfinished parts of the project.
+
+#### Lack of understanding of the consequences of technical debt
+
+Sometimes your employer might not understand that technical debt has “interest” insofar as it slows down the pace of development as debt accumulates. This can make it too difficult to dedicate the team’s time to refactoring because management doesn’t see the value of it.
+
+#### Failing to combat the strict coherence of components
+
+This is when the project resembles a monolith rather than the product of individual modules. In this case, any changes to one part of the project will affect others. Team development is made more difficult because it’s difficult to isolate the work of individual members.
+
+#### Lack of tests
+
+The lack of immediate feedback encourages quick, but risky workarounds or kludges. In worst cases, these changes are implemented and deployed right into the production without any prior testing. The consequences can be catastrophic. For example, an innocent-looking hotfix might send a weird test email to thousands of customers or even worse, flush or corrupt an entire database.
+
+#### Lack of documentation
+
+This slows down the introduction of new people to the project and can grind development to a halt if key people leave the project.
+
+#### Lack of interaction between team members
+
+If the knowledge base isn’t distributed throughout the company, people will end up working with an outdated understanding of processes and information about the project. This situation can be exacerbated when junior developers are incorrectly trained by their mentors.
+
+#### Long-term simultaneous development in several branches
+
+This can lead to the accumulation of technical debt, which is then increased when changes are merged. The more changes made in isolation, the greater the total technical debt.
+
+#### Delayed refactoring
+
+The project’s requirements are constantly changing and at some point it may become obvious that parts of the code are obsolete, have become cumbersome, and must be redesigned to meet new requirements.
+
+On the other hand, the project’s programmers are writing new code every day that works with the obsolete parts. Therefore, the longer refactoring is delayed, the more dependent code will have to be reworked in the future.
+
+#### Lack of compliance monitoring
+
+This happens when everyone working on the project writes code as they see fit (i.e. the same way they wrote the last project).
+
+#### Incompetence
+
+This is when the developer just doesn’t know how to write decent code.
+
+## Refactoring Techniques
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+
+# Refactoring Techniques
+
+![](https://refactoring.guru/images/refactoring/content/catalog/composing-methods.png?id=953854e802753495812cb9b2686765f7)
+
+### [Composing Methods](https://refactoring.guru/refactoring/techniques/composing-methods)
+
+Much of refactoring is devoted to correctly composing methods. In most cases, excessively long methods are the root of all evil. The vagaries of code inside these methods conceal the execution logic and make the method extremely hard to understand—and even harder to change.
+
+The refactoring techniques in this group streamline methods, remove code duplication, and pave the way for future improvements.
+
+- [Extract Method](https://refactoring.guru/extract-method)
+- [Inline Method](https://refactoring.guru/inline-method)
+- [Extract Variable](https://refactoring.guru/extract-variable)
+- [Inline Temp](https://refactoring.guru/inline-temp)
+
+- [Replace Temp with Query](https://refactoring.guru/replace-temp-with-query)
+- [Split Temporary Variable](https://refactoring.guru/split-temporary-variable)
+- [Remove Assignments to Parameters](https://refactoring.guru/remove-assignments-to-parameters)
+
+- [Replace Method with Method Object](https://refactoring.guru/replace-method-with-method-object)
+- [Substitute Algorithm](https://refactoring.guru/substitute-algorithm)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/moving-features-between-objects.png?id=8ba49e26381112792e32172edf220524)
+
+### [Moving Features between Objects](https://refactoring.guru/refactoring/techniques/moving-features-between-objects)
+
+Even if you have distributed functionality among different classes in a less-than-perfect way, there is still hope.
+
+These refactoring techniques show how to safely move functionality between classes, create new classes, and hide implementation details from public access.
+
+- [Move Method](https://refactoring.guru/move-method)
+- [Move Field](https://refactoring.guru/move-field)
+- [Extract Class](https://refactoring.guru/extract-class)
+- [Inline Class](https://refactoring.guru/inline-class)
+
+- [Hide Delegate](https://refactoring.guru/hide-delegate)
+- [Remove Middle Man](https://refactoring.guru/remove-middle-man)
+
+- [Introduce Foreign Method](https://refactoring.guru/introduce-foreign-method)
+- [Introduce Local Extension](https://refactoring.guru/introduce-local-extension)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/organizing-data.png?id=0be19b5980545dccb976d377ec731d30)
+
+### [Organizing Data](https://refactoring.guru/refactoring/techniques/organizing-data)
+
+These refactoring techniques help with data handling, replacing primitives with rich class functionality. Another important result is untangling of class associations, which makes classes more portable and reusable.
+
+- [Change Value to Reference](https://refactoring.guru/change-value-to-reference)
+- [Change Reference to Value](https://refactoring.guru/change-reference-to-value)
+- [Duplicate Observed Data](https://refactoring.guru/duplicate-observed-data)
+- [Self Encapsulate Field](https://refactoring.guru/self-encapsulate-field)
+- [Replace Data Value with Object](https://refactoring.guru/replace-data-value-with-object)
+- [Replace Array with Object](https://refactoring.guru/replace-array-with-object)
+
+- [Change Unidirectional Association to Bidirectional](https://refactoring.guru/change-unidirectional-association-to-bidirectional)
+- [Change Bidirectional Association to Unidirectional](https://refactoring.guru/change-bidirectional-association-to-unidirectional)
+- [Encapsulate Field](https://refactoring.guru/encapsulate-field)
+- [Encapsulate Collection](https://refactoring.guru/encapsulate-collection)
+- [Replace Magic Number with Symbolic Constant](https://refactoring.guru/replace-magic-number-with-symbolic-constant)
+
+- [Replace Type Code with Class](https://refactoring.guru/replace-type-code-with-class)
+- [Replace Type Code with Subclasses](https://refactoring.guru/replace-type-code-with-subclasses)
+- [Replace Type Code with State/Strategy](https://refactoring.guru/replace-type-code-with-state-strategy)
+- [Replace Subclass with Fields](https://refactoring.guru/replace-subclass-with-fields)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/simplifying-conditional-expressions.png?id=a551572d527946cd03b647098b67776d)
+
+### [Simplifying Conditional Expressions](https://refactoring.guru/refactoring/techniques/simplifying-conditional-expressions)
+
+Conditionals tend to get more and more complicated in their logic over time, and there are yet more techniques to combat this as well.
+
+- [Consolidate Conditional Expression](https://refactoring.guru/consolidate-conditional-expression)
+- [Consolidate Duplicate Conditional Fragments](https://refactoring.guru/consolidate-duplicate-conditional-fragments)
+- [Decompose Conditional](https://refactoring.guru/decompose-conditional)
+
+- [Replace Conditional with Polymorphism](https://refactoring.guru/replace-conditional-with-polymorphism)
+- [Remove Control Flag](https://refactoring.guru/remove-control-flag)
+- [Replace Nested Conditional with Guard Clauses](https://refactoring.guru/replace-nested-conditional-with-guard-clauses)
+
+- [Introduce Null Object](https://refactoring.guru/introduce-null-object)
+- [Introduce Assertion](https://refactoring.guru/introduce-assertion)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/simplifying-method-calls.png?id=0af0ac74a5d0d7f8ac33a58b4a479ee6)
+
+### [Simplifying Method Calls](https://refactoring.guru/refactoring/techniques/simplifying-method-calls)
+
+These techniques make method calls simpler and easier to understand. This, in turn, simplifies the interfaces for interaction between classes.
+
+- [Add Parameter](https://refactoring.guru/add-parameter)
+- [Remove Parameter](https://refactoring.guru/remove-parameter)
+- [Rename Method](https://refactoring.guru/rename-method)
+- [Separate Query from Modifier](https://refactoring.guru/separate-query-from-modifier)
+- [Parameterize Method](https://refactoring.guru/parameterize-method)
+
+- [Introduce Parameter Object](https://refactoring.guru/introduce-parameter-object)
+- [Preserve Whole Object](https://refactoring.guru/preserve-whole-object)
+- [Remove Setting Method](https://refactoring.guru/remove-setting-method)
+- [Replace Parameter with Explicit Methods](https://refactoring.guru/replace-parameter-with-explicit-methods)
+- [Replace Parameter with Method Call](https://refactoring.guru/replace-parameter-with-method-call)
+
+- [Hide Method](https://refactoring.guru/hide-method)
+- [Replace Constructor with Factory Method](https://refactoring.guru/replace-constructor-with-factory-method)
+- [Replace Error Code with Exception](https://refactoring.guru/replace-error-code-with-exception)
+- [Replace Exception with Test](https://refactoring.guru/replace-exception-with-test)
+
+![](https://refactoring.guru/images/refactoring/content/catalog/dealing-with-generalization.png?id=56357b115153175b2eb40563d936087c)
+
+### [Dealing with Generalization](https://refactoring.guru/refactoring/techniques/dealing-with-generalization)
+
+Abstraction has its own group of refactoring techniques, primarily associated with moving functionality along the class inheritance hierarchy, creating new classes and interfaces, and replacing inheritance with delegation and vice versa.
+
+- [Pull Up Field](https://refactoring.guru/pull-up-field)
+- [Pull Up Method](https://refactoring.guru/pull-up-method)
+- [Pull Up Constructor Body](https://refactoring.guru/pull-up-constructor-body)
+- [Push Down Field](https://refactoring.guru/push-down-field)
+- [Push Down Method](https://refactoring.guru/push-down-method)
+
+- [Extract Subclass](https://refactoring.guru/extract-subclass)
+- [Extract Superclass](https://refactoring.guru/extract-superclass)
+- [Extract Interface](https://refactoring.guru/extract-interface)
+- [Collapse Hierarchy](https://refactoring.guru/collapse-hierarchy)
+
+- [Form Template Method](https://refactoring.guru/form-template-method)
+- [Replace Inheritance with Delegation](https://refactoring.guru/replace-inheritance-with-delegation)
+- [Replace Delegation with Inheritance](https://refactoring.guru/replace-delegation-with-inheritance)
+
+## Composing Methods
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+/ [Techniques](https://refactoring.guru/refactoring/techniques)
+
+# Composing Methods
+
+Much of refactoring is devoted to correctly composing methods. In most cases, excessively long methods are the root of all evil. The vagaries of code inside these methods conceal the execution logic and make the method extremely hard to understand—and even harder to change.
+
+The refactoring techniques in this group streamline methods, remove code duplication, and pave the way for future improvements.
+
+[Extract Method](https://refactoring.guru/extract-method)
+
+**Problem:** You have a code fragment that can be grouped together.
+
+**Solution:** Move this code to a separate new method (or function) and replace the old code with a call to the method.
+
+[Inline Method](https://refactoring.guru/inline-method)
+
+**Problem:** When a method body is more obvious than the method itself, use this technique.
+
+**Solution:** Replace calls to the method with the method’s content and delete the method itself.
+
+[Extract Variable](https://refactoring.guru/extract-variable)
+
+**Problem:** You have an expression that’s hard to understand.
+
+**Solution:** Place the result of the expression or its parts in separate variables that are self-explanatory.
+
+[Inline Temp](https://refactoring.guru/inline-temp)
+
+**Problem:** You have a temporary variable that’s assigned the result of a simple expression and nothing more.
+
+**Solution:** Replace the references to the variable with the expression itself.
+
+[Replace Temp with Query](https://refactoring.guru/replace-temp-with-query)
+
+**Problem:** You place the result of an expression in a local variable for later use in your code.
+
+**Solution:** Move the entire expression to a separate method and return the result from it. Query the method instead of using a variable. Incorporate the new method in other methods, if necessary.
+
+[Split Temporary Variable](https://refactoring.guru/split-temporary-variable)
+
+**Problem:** You have a local variable that’s used to store various intermediate values inside a method (except for cycle variables).
+
+**Solution:** Use different variables for different values. Each variable should be responsible for only one particular thing.
+
+[Remove Assignments to Parameters](https://refactoring.guru/remove-assignments-to-parameters)
+
+**Problem:** Some value is assigned to a parameter inside method’s body.
+
+**Solution:** Use a local variable instead of a parameter.
+
+[Replace Method with Method Object](https://refactoring.guru/replace-method-with-method-object)
+
+**Problem:** You have a long method in which the local variables are so intertwined that you can’t apply _Extract Method_.
+
+**Solution:** Transform the method into a separate class so that the local variables become fields of the class. Then you can split the method into several methods within the same class.
+
+[Substitute Algorithm](https://refactoring.guru/substitute-algorithm)
+
+**Problem:** So you want to replace an existing algorithm with a new one?
+
+**Solution:** Replace the body of the method that implements the algorithm with a new algorithm.
+
+## Class Generalization Techniques
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+/ [Techniques](https://refactoring.guru/refactoring/techniques)
+
+# Dealing with Generalization
+
+Abstraction has its own group of refactoring techniques, primarily associated with moving functionality along the class inheritance hierarchy, creating new classes and interfaces, and replacing inheritance with delegation and vice versa.
+
+[Pull Up Field](https://refactoring.guru/pull-up-field)
+
+**Problem:** Two classes have the same field.
+
+**Solution:** Remove the field from subclasses and move it to the superclass.
+
+[Pull Up Method](https://refactoring.guru/pull-up-method)
+
+**Problem:** Your subclasses have methods that perform similar work.
+
+**Solution:** Make the methods identical and then move them to the relevant superclass.
+
+[Pull Up Constructor Body](https://refactoring.guru/pull-up-constructor-body)
+
+**Problem:** Your subclasses have constructors with code that’s mostly identical.
+
+**Solution:** Create a superclass constructor and move the code that’s the same in the subclasses to it. Call the superclass constructor in the subclass constructors.
+
+[Push Down Method](https://refactoring.guru/push-down-method)
+
+**Problem:** Is behavior implemented in a superclass used by only one (or a few) subclasses?
+
+**Solution:** Move this behavior to the subclasses.
+
+[Push Down Field](https://refactoring.guru/push-down-field)
+
+**Problem:** Is a field used only in a few subclasses?
+
+**Solution:** Move the field to these subclasses.
+
+[Extract Subclass](https://refactoring.guru/extract-subclass)
+
+**Problem:** A class has features that are used only in certain cases.
+
+**Solution:** Create a subclass and use it in these cases.
+
+[Extract Superclass](https://refactoring.guru/extract-superclass)
+
+**Problem:** You have two classes with common fields and methods.
+
+**Solution:** Create a shared superclass for them and move all the identical fields and methods to it.
+
+[Extract Interface](https://refactoring.guru/extract-interface)
+
+**Problem:** Multiple clients are using the same part of a class interface. Another case: part of the interface in two classes is the same.
+
+**Solution:** Move this identical portion to its own interface.
+
+[Collapse Hierarchy](https://refactoring.guru/collapse-hierarchy)
+
+**Problem:** You have a class hierarchy in which a subclass is practically the same as its superclass.
+
+**Solution:** Merge the subclass and superclass.
+
+[Form Template Method](https://refactoring.guru/form-template-method)
+
+**Problem:** Your subclasses implement algorithms that contain similar steps in the same order.
+
+**Solution:** Move the algorithm structure and identical steps to a superclass, and leave implementation of the different steps in the subclasses.
+
+[Replace Inheritance with Delegation](https://refactoring.guru/replace-inheritance-with-delegation)
+
+**Problem:** You have a subclass that uses only a portion of the methods of its superclass (or it’s not possible to inherit superclass data).
+
+**Solution:** Create a field and put a superclass object in it, delegate methods to the superclass object, and get rid of inheritance.
+
+[Replace Delegation with Inheritance](https://refactoring.guru/replace-delegation-with-inheritance)
+
+**Problem:** A class contains many simple methods that delegate to all methods of another class.
+
+**Solution:** Make the class a delegate inheritor, which makes the delegating methods unnecessary.
+
+## Feature Movement Techniques
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+/ [Techniques](https://refactoring.guru/refactoring/techniques)
+
+# Moving Features between Objects
+
+Even if you have distributed functionality among different classes in a less-than-perfect way, there’s still hope.
+
+These refactoring techniques show how to safely move functionality between classes, create new classes, and hide implementation details from public access.
+
+[Move Method](https://refactoring.guru/move-method)
+
+**Problem:** A method is used more in another class than in its own class.
+
+**Solution:** Create a new method in the class that uses the method the most, then move code from the old method to there. Turn the code of the original method into a reference to the new method in the other class or else remove it entirely.
+
+[Move Field](https://refactoring.guru/move-field)
+
+**Problem:** A field is used more in another class than in its own class.
+
+**Solution:** Create a field in a new class and redirect all users of the old field to it.
+
+[Extract Class](https://refactoring.guru/extract-class)
+
+**Problem:** When one class does the work of two, awkwardness results.
+
+**Solution:** Instead, create a new class and place the fields and methods responsible for the relevant functionality in it.
+
+[Inline Class](https://refactoring.guru/inline-class)
+
+**Problem:** A class does almost nothing and isn’t responsible for anything, and no additional responsibilities are planned for it.
+
+**Solution:** Move all features from the class to another one.
+
+[Hide Delegate](https://refactoring.guru/hide-delegate)
+
+**Problem:** The client gets object B from a field or method of object А. Then the client calls a method of object B.
+
+**Solution:** Create a new method in class A that delegates the call to object B. Now the client doesn’t know about, or depend on, class B.
+
+[Remove Middle Man](https://refactoring.guru/remove-middle-man)
+
+**Problem:** A class has too many methods that simply delegate to other objects.
+
+**Solution:** Delete these methods and force the client to call the end methods directly.
+
+[Introduce Foreign Method](https://refactoring.guru/introduce-foreign-method)
+
+**Problem:** A utility class doesn’t contain the method that you need and you can’t add the method to the class.
+
+**Solution:** Add the method to a client class and pass an object of the utility class to it as an argument.
+
+[Introduce Local Extension](https://refactoring.guru/introduce-local-extension)
+
+**Problem:** A utility class doesn’t contain some methods that you need. But you can’t add these methods to the class.
+
+**Solution:** Create a new class containing the methods and make it either the child or wrapper of the utility class.
+
+## Data Organization Techniques
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+/ [Techniques](https://refactoring.guru/refactoring/techniques)
+
+# Organizing Data
+
+These refactoring techniques help with data handling, replacing primitives with rich class functionality.
+
+Another important result is untangling of class associations, which makes classes more portable and reusable.
+
+[Self Encapsulate Field](https://refactoring.guru/self-encapsulate-field)
+
+**Problem:** You use direct access to private fields inside a class.
+
+**Solution:** Create a getter and setter for the field, and use only them for accessing the field.
+
+[Replace Data Value with Object](https://refactoring.guru/replace-data-value-with-object)
+
+**Problem:** A class (or group of classes) contains a data field. The field has its own behavior and associated data.
+
+**Solution:** Create a new class, place the old field and its behavior in the class, and store the object of the class in the original class.
+
+[Change Value to Reference](https://refactoring.guru/change-value-to-reference)
+
+**Problem:** So you have many identical instances of a single class that you need to replace with a single object.
+
+**Solution:** Convert the identical objects to a single reference object.
+
+[Change Reference to Value](https://refactoring.guru/change-reference-to-value)
+
+**Problem:** You have a reference object that’s too small and infrequently changed to justify managing its life cycle.
+
+**Solution:** Turn it into a value object.
+
+[Replace Array with Object](https://refactoring.guru/replace-array-with-object)
+
+**Problem:** You have an array that contains various types of data.
+
+**Solution:** Replace the array with an object that will have separate fields for each element.
+
+[Duplicate Observed Data](https://refactoring.guru/duplicate-observed-data)
+
+**Problem:** Is domain data stored in classes responsible for the GUI?
+
+**Solution:** Then it’s a good idea to separate the data into separate classes, ensuring connection and synchronization between the domain class and the GUI.
+
+[Change Unidirectional Association to Bidirectional](https://refactoring.guru/change-unidirectional-association-to-bidirectional)
+
+**Problem:** You have two classes that each need to use the features of the other, but the association between them is only unidirectional.
+
+**Solution:** Add the missing association to the class that needs it.
+
+[Change Bidirectional Association to Unidirectional](https://refactoring.guru/change-bidirectional-association-to-unidirectional)
+
+**Problem:** You have a bidirectional association between classes, but one of the classes doesn’t use the other’s features.
+
+**Solution:** Remove the unused association.
+
+[Replace Magic Number with Symbolic Constant](https://refactoring.guru/replace-magic-number-with-symbolic-constant)
+
+**Problem:** Your code uses a number that has a certain meaning to it.
+
+**Solution:** Replace this number with a constant that has a human-readable name explaining the meaning of the number.
+
+[Encapsulate Field](https://refactoring.guru/encapsulate-field)
+
+**Problem:** You have a public field.
+
+**Solution:** Make the field private and create access methods for it.
+
+[Encapsulate Collection](https://refactoring.guru/encapsulate-collection)
+
+**Problem:** A class contains a collection field and a simple getter and setter for working with the collection.
+
+**Solution:** Make the getter-returned value read-only and create methods for adding/deleting elements of the collection.
+
+[Replace Type Code with Class](https://refactoring.guru/replace-type-code-with-class)
+
+**Problem:** A class has a field that contains type code. The values of this type aren’t used in operator conditions and don’t affect the behavior of the program.
+
+**Solution:** Create a new class and use its objects instead of the type code values.
+
+[Replace Type Code with Subclasses](https://refactoring.guru/replace-type-code-with-subclasses)
+
+**Problem:** You have a coded type that directly affects program behavior (values of this field trigger various code in conditionals).
+
+**Solution:** Create subclasses for each value of the coded type. Then extract the relevant behaviors from the original class to these subclasses. Replace the control flow code with polymorphism.
+
+[Replace Type Code with State/Strategy](https://refactoring.guru/replace-type-code-with-state-strategy)
+
+**Problem:** You have a coded type that affects behavior but you can’t use subclasses to get rid of it.
+
+**Solution:** Replace type code with a state object. If it’s necessary to replace a field value with type code, another state object is “plugged in”.
+
+[Replace Subclass with Fields](https://refactoring.guru/replace-subclass-with-fields)
+
+**Problem:** You have subclasses differing only in their (constant-returning) methods.
+
+**Solution:** Replace the methods with fields in the parent class and delete the subclasses.
+
+## Simplifying Conditionals
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+/ [Techniques](https://refactoring.guru/refactoring/techniques)
+
+# Simplifying Conditional Expressions
+
+Conditionals tend to get more and more complicated in their logic over time, and there are yet more techniques to combat this as well.
+
+[Decompose Conditional](https://refactoring.guru/decompose-conditional)
+
+**Problem:** You have a complex conditional (`if-then`/`else` or `switch`).
+
+**Solution:** Decompose the complicated parts of the conditional into separate methods: the condition, `then` and `else`.
+
+[Consolidate Conditional Expression](https://refactoring.guru/consolidate-conditional-expression)
+
+**Problem:** You have multiple conditionals that lead to the same result or action.
+
+**Solution:** Consolidate all these conditionals in a single expression.
+
+[Consolidate Duplicate Conditional Fragments](https://refactoring.guru/consolidate-duplicate-conditional-fragments)
+
+**Problem:** Identical code can be found in all branches of a conditional.
+
+**Solution:** Move the code outside of the conditional.
+
+[Remove Control Flag](https://refactoring.guru/remove-control-flag)
+
+**Problem:** You have a boolean variable that acts as a control flag for multiple boolean expressions.
+
+**Solution:** Instead of the variable, use `break`, `continue` and `return`.
+
+[Replace Nested Conditional with Guard Clauses](https://refactoring.guru/replace-nested-conditional-with-guard-clauses)
+
+**Problem:** You have a group of nested conditionals and it’s hard to determine the normal flow of code execution.
+
+**Solution:** Isolate all special checks and edge cases into separate clauses and place them before the main checks. Ideally, you should have a “flat” list of conditionals, one after the other.
+
+[Replace Conditional with Polymorphism](https://refactoring.guru/replace-conditional-with-polymorphism)
+
+**Problem:** You have a conditional that performs various actions depending on object type or properties.
+
+**Solution:** Create subclasses matching the branches of the conditional. In them, create a shared method and move code from the corresponding branch of the conditional to it. Then replace the conditional with the relevant method call. The result is that the proper implementation will be attained via polymorphism depending on the object class.
+
+[Introduce Null Object](https://refactoring.guru/introduce-null-object)
+
+**Problem:** Since some methods return `null` instead of real objects, you have many checks for `null` in your code.
+
+**Solution:** Instead of `null`, return a null object that exhibits the default behavior.
+
+[Introduce Assertion](https://refactoring.guru/introduce-assertion)
+
+**Problem:** For a portion of code to work correctly, certain conditions or values must be true.
+
+**Solution:** Replace these assumptions with specific assertion checks.
+
+## Method Call Simplification
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+/ [Techniques](https://refactoring.guru/refactoring/techniques)
+
+# Simplifying Method Calls
+
+These techniques make method calls simpler and easier to understand. This, in turn, simplifies the interfaces for interaction between classes.
+
+[Rename Method](https://refactoring.guru/rename-method)
+
+**Problem:** The name of a method doesn’t explain what the method does.
+
+**Solution:** Rename the method.
+
+[Add Parameter](https://refactoring.guru/add-parameter)
+
+**Problem:** A method doesn’t have enough data to perform certain actions.
+
+**Solution:** Create a new parameter to pass the necessary data.
+
+[Remove Parameter](https://refactoring.guru/remove-parameter)
+
+**Problem:** A parameter isn’t used in the body of a method.
+
+**Solution:** Remove the unused parameter.
+
+[Separate Query from Modifier](https://refactoring.guru/separate-query-from-modifier)
+
+**Problem:** Do you have a method that returns a value but also changes something inside an object?
+
+**Solution:** Split the method into two separate methods. As you would expect, one of them should return the value and the other one modifies the object.
+
+[Parameterize Method](https://refactoring.guru/parameterize-method)
+
+**Problem:** Multiple methods perform similar actions that are different only in their internal values, numbers or operations.
+
+**Solution:** Combine these methods by using a parameter that will pass the necessary special value.
+
+[Replace Parameter with Explicit Methods](https://refactoring.guru/replace-parameter-with-explicit-methods)
+
+**Problem:** A method is split into parts, each of which is run depending on the value of a parameter.
+
+**Solution:** Extract the individual parts of the method into their own methods and call them instead of the original method.
+
+[Preserve Whole Object](https://refactoring.guru/preserve-whole-object)
+
+**Problem:** You get several values from an object and then pass them as parameters to a method.
+
+**Solution:** Instead, try passing the whole object.
+
+[Replace Parameter with Method Call](https://refactoring.guru/replace-parameter-with-method-call)
+
+**Problem:** Calling a query method and passing its results as the parameters of another method, while that method could call the query directly.
+
+**Solution:** Instead of passing the value through a parameter, try placing a query call inside the method body.
+
+[Introduce Parameter Object](https://refactoring.guru/introduce-parameter-object)
+
+**Problem:** Your methods contain a repeating group of parameters.
+
+**Solution:** Replace these parameters with an object.
+
+[Remove Setting Method](https://refactoring.guru/remove-setting-method)
+
+**Problem:** The value of a field should be set only when it’s created, and not change at any time after that.
+
+**Solution:** So remove methods that set the field’s value.
+
+[Hide Method](https://refactoring.guru/hide-method)
+
+**Problem:** A method isn’t used by other classes or is used only inside its own class hierarchy.
+
+**Solution:** Make the method private or protected.
+
+[Replace Constructor with Factory Method](https://refactoring.guru/replace-constructor-with-factory-method)
+
+**Problem:** You have a complex constructor that does something more than just setting parameter values in object fields.
+
+**Solution:** Create a factory method and use it to replace constructor calls.
+
+[Replace Error Code with Exception](https://refactoring.guru/replace-error-code-with-exception)
+
+**Problem:** A method returns a special value that indicates an error?
+
+**Solution:** Throw an exception instead.
+
+[Replace Exception with Test](https://refactoring.guru/replace-exception-with-test)
+
+**Problem:** You throw an exception in a place where a simple test would do the job?
+
+**Solution:** Replace the exception with a condition test.
+
+## Understanding Refactoring
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+
+# Clean code
+
+The main purpose of refactoring is to fight technical debt. It transforms a mess into clean code and simple design.
+
+Nice! But what’s clean code, anyway? Here are some of its features:
+
+#### Clean code is obvious for other programmers.
+
+And I’m not talking about super sophisticated algorithms. Poor variable naming, bloated classes and methods, magic numbers -you name it- all of that makes code sloppy and difficult to grasp.
+
+#### Clean code doesn’t contain duplication.
+
+Each time you have to make a change in a duplicate code, you have to remember to make the same change to every instance. This increases the cognitive load and slows down the progress.
+
+#### Clean code contains a minimal number of classes and other moving parts.
+
+Less code is less stuff to keep in your head. Less code is less maintenance. Less code is fewer bugs. Code is liability, keep it short and simple.
+
+#### Clean code passes all tests.
+
+You know your code is dirty when only 95% of your tests passed. You know you’re screwed when your test coverage is 0%.
+
+#### Clean code is easier and cheaper to maintain!
+
+## When to Refactor
+[![](https://refactoring.guru/images/content-public/ann/summer/sunbed.svg?id=b1e7314a63715a13870a6bd1a43613f7)Summer SALE![](https://refactoring.guru/images/content-public/ann/summer/reading-book.svg?id=36006ea720df8c171968cf613e8ea164)](https://refactoring.guru/store)
+
+/ [Refactoring](https://refactoring.guru/refactoring)
+
+# When to refactor
+
+![](https://refactoring.guru/images/refactoring/content/pages/r1.svg?id=0a20f72cdd91691d0e6b29f2c5519e4c)
+
+#### Rule of Three
+
+1. When you’re doing something for the first time, just get it done.
+
+2. When you’re doing something similar for the second time, cringe at having to repeat but do the same thing anyway.
+
+3. When you’re doing something for the third time, start refactoring.
+
+
+![](https://refactoring.guru/images/refactoring/content/pages/r2.svg?id=5b3806c58901d111cee12fb60df9e0ac)
+
+#### When adding a feature
+
+- Refactoring helps you understand other people’s code. If you have to deal with someone else’s dirty code, try to refactor it first. Clean code is much easier to grasp. You will improve it not only for yourself but also for those who use it after you.
+
+- Refactoring makes it easier to add new features. It’s much easier to make changes in clean code.
+
+
+![](https://refactoring.guru/images/refactoring/content/pages/r3.svg?id=b3ab8426bd85943ecedccbaf02181342)
+
+#### When fixing a bug
+
+Bugs in code behave just like those in real life: they live in the darkest, dirtiest places in the code. Clean your code and the errors will practically discover themselves.
+
+Managers appreciate proactive refactoring as it eliminates the need for special refactoring tasks later. Happy bosses make happy programmers!
+
+![](https://refactoring.guru/images/refactoring/content/pages/r4.svg?id=68c5945ac20e360e480c1254ac94be82)
+
+#### During a code review
+
+The code review may be the last chance to tidy up the code before it becomes available to the public.
+
+It’s best to perform such reviews in a pair with an author. This way you could fix simple problems quickly and gauge the time for fixing the more difficult ones.
+
