@@ -10,10 +10,82 @@
         <h2 class="mb-1">All Deficiencies</h2>
         <p class="text-muted mb-0">{{ total_count }} total records found</p>
     </div>
-    <a href="{% url 'deficiencies:create' %}" class="btn btn-primary">
-        <span class="material-icons-round">add_circle</span>
-        New Deficiency
-    </a>
+    <div class="d-flex gap-2">
+        <!-- PDF Report Button -->
+        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#reportModal">
+            <span class="material-icons-round" style="font-size:16px;">picture_as_pdf</span>
+            Generate Report
+        </button>
+        <a href="{% url 'deficiencies:create' %}" class="btn btn-primary">
+            <span class="material-icons-round">add_circle</span>
+            New Deficiency
+        </a>
+    </div>
+</div>
+
+<!-- PDF Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generate PDF Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reportForm" method="get" action="{% url 'deficiencies:report_pdf' %}" target="_blank">
+                    <div class="mb-3">
+                        <label class="form-label">Site</label>
+                        <select name="site" class="form-select">
+                            <option value="All">All Sites</option>
+                            {% for s in sites %}
+                            <option value="{{ s }}">{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Severity</label>
+                        <select name="severity" class="form-select">
+                            <option value="All">All Severities</option>
+                            <option value="A">A - Critical</option>
+                            <option value="B">B - Major</option>
+                            <option value="C">C - Minor</option>
+                            <option value="D">D - Cosmetic</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Resource / Aircraft Type</label>
+                        <select name="resource" class="form-select">
+                            <option value="">All Resources</option>
+                            {% for r in resources %}
+                            <option value="{{ r }}">{{ r }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Date From</label>
+                                <input type="date" name="date_from" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Date To</label>
+                                <input type="date" name="date_to" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="reportForm" class="btn btn-primary">
+                    <span class="material-icons-round" style="font-size:16px;">picture_as_pdf</span>
+                    Generate PDF
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Filters -->

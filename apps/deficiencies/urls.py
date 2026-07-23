@@ -3,6 +3,7 @@ URL configuration for deficiencies app.
 """
 from django.urls import path
 from . import views
+from . import views_report
 
 app_name = 'deficiencies'
 
@@ -11,11 +12,14 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('deficiencies/', views.deficiency_list, name='list'),
 
+    # PDF Report
+    path('deficiencies/report/pdf/', views_report.dr_report_pdf_view, name='report_pdf'),
+
     # Deficiency CRUD - using deficiency_number instead of pk
-    
+
     # 1. MOVED 'new' to the top so it doesn't get intercepted!
     path('deficiency/new/', views.deficiency_create, name='create'),
-    
+
     # 2. Changed 'str' to 'int' so these only trigger for numbers
     path('deficiency/<int:deficiency_number>/', views.deficiency_detail, name='detail'),
     path('deficiency/<int:deficiency_number>/edit/', views.deficiency_update, name='update'),
