@@ -64,6 +64,15 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="col-md-2">
+                <label class="form-label">Deficiency Type</label>
+                <select name="deficiency_type" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Types</option>
+                    {% for t in deficiency_types %}
+                    <option value="{{ t }}" {% if t == deficiency_type_filter %}selected{% endif %}>{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <div class="col-md-1 d-flex align-items-end">
                 <!-- Button removed - filters auto-submit now -->
             </div>
@@ -157,7 +166,7 @@
             <ul class="pagination justify-content-center mb-0">
                 {% if page > 1 %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page|add:'-1' }}&search={{ search }}&status={{ status_filter }}&severity={{ severity_filter }}&site={{ site_filter }}&resource={{ resource_filter }}">
+                    <a class="page-link" href="?page={{ page|add:'-1' }}&search={{ search }}&status={{ status_filter }}&severity={{ severity_filter }}&site={{ site_filter }}&resource={{ resource_filter }}&deficiency_type={{ deficiency_type_filter }}">
                         <span class="material-icons-round" style="font-size:18px;">chevron_left</span>
                     </a>
                 </li>
@@ -174,14 +183,14 @@
                         </li>
                     {% else %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ p }}&search={{ search }}&status={{ status_filter }}&severity={{ severity_filter }}&site={{ site_filter }}&resource={{ resource_filter }}">{{ p }}</a>
+                            <a class="page-link" href="?page={{ p }}&search={{ search }}&status={{ status_filter }}&severity={{ severity_filter }}&site={{ site_filter }}&resource={{ resource_filter }}&deficiency_type={{ deficiency_type_filter }}">{{ p }}</a>
                         </li>
                     {% endif %}
                 {% endfor %}
 
                 {% if page < total_pages %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page|add:'1' }}&search={{ search }}&status={{ status_filter }}&severity={{ severity_filter }}&site={{ site_filter }}&resource={{ resource_filter }}">
+                    <a class="page-link" href="?page={{ page|add:'1' }}&search={{ search }}&status={{ status_filter }}&severity={{ severity_filter }}&site={{ site_filter }}&resource={{ resource_filter }}&deficiency_type={{ deficiency_type_filter }}">
                         <span class="material-icons-round" style="font-size:18px;">chevron_right</span>
                     </a>
                 </li>

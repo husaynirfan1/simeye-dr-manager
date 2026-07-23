@@ -145,6 +145,7 @@ def deficiency_list(request):
     severity_filter = request.GET.get('severity', '')
     site_filter = request.GET.get('site', '')
     resource_filter = request.GET.get('resource', '')
+    deficiency_type_filter = request.GET.get('deficiency_type', '')
     search = request.GET.get('search', '')
 
     # Build queryset
@@ -159,6 +160,8 @@ def deficiency_list(request):
         deficiencies = deficiencies.filter(site_name=site_filter)
     if resource_filter:
         deficiencies = deficiencies.filter(resource=resource_filter)
+    if deficiency_type_filter:
+        deficiencies = deficiencies.filter(deficiency_type=deficiency_type_filter)
     if search:
         deficiencies = deficiencies.filter(
             Q(deficiency_number__icontains=search) |
@@ -181,6 +184,7 @@ def deficiency_list(request):
     severities = Deficiency.objects.values_list('severity', flat=True).distinct().order_by('severity')
     sites = Deficiency.objects.values_list('site_name', flat=True).distinct().order_by('site_name')
     resources = Deficiency.objects.values_list('resource', flat=True).distinct().order_by('resource')
+    deficiency_types = Deficiency.objects.values_list('deficiency_type', flat=True).distinct().order_by('deficiency_type')
 
     context = {
         'deficiencies': page_obj,
@@ -192,10 +196,12 @@ def deficiency_list(request):
         'severities': severities,
         'sites': sites,
         'resources': resources,
+        'deficiency_types': deficiency_types,
         'status_filter': status_filter,
         'severity_filter': severity_filter,
         'site_filter': site_filter,
         'resource_filter': resource_filter,
+        'deficiency_type_filter': deficiency_type_filter,
         'search': search,
     }
     return render(request, 'deficiencies/list.html', context)
