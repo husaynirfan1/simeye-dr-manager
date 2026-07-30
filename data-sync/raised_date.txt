@@ -1,3 +1,8 @@
 <start>
-June 15 2026 04:00 PM
+June 16 2026 09:00 PM
+July 20 2026 09:00 PM
+July 26 2026 10:00 PM
+July 28 2026 08:40 PM
+July 28 2026 08:40 PM
+July 29 2026 08:09 PM
 <end>
