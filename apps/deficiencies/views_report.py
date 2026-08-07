@@ -218,7 +218,7 @@ class PDFBuilder:
         printed_str = f"<b>Printed On:</b> {self.context['printed_date']} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>{self.context['printed_time']} (Eastern Time)</b>"
         self.story.append(Paragraph(printed_str, self.styles['Subtitle']))
         self.story.append(Paragraph(f"<b>Site: {self.context['site']}</b>", self.styles['Subtitle']))
-        self.story.append(Paragraph("Maintenance Type Deficiency", self.styles['Subtitle']))
+        self.story.append(Paragraph(self.context['deficiency_type_label'], self.styles['Subtitle']))
         self.story.append(Paragraph(self.context['severity_label'], self.styles['Subtitle']))
 
         # Wide distinct Legend boxes
@@ -380,6 +380,7 @@ def dr_report_pdf_view(request):
     site = request.GET.get('site', 'All')
     severity = request.GET.get('severity', 'All')
     resource = request.GET.get('resource', '')
+    deficiency_type = request.GET.get('deficiency_type', '')
     date_from = request.GET.get('date_from', '')
     date_to = request.GET.get('date_to', '')
     download = request.GET.get('download', '0')
@@ -394,6 +395,9 @@ def dr_report_pdf_view(request):
 
     if resource:
         deficiencies = deficiencies.filter(resource=resource)
+
+    if deficiency_type:
+        deficiencies = deficiencies.filter(deficiency_type=deficiency_type)
 
     deficiencies = deficiencies.order_by('resource', 'deficiency_number')
     deficiencies_list = list(deficiencies)
@@ -469,6 +473,7 @@ def dr_report_pdf_view(request):
     printed_time = now_eastern.strftime('%I:%M:%S%p').lstrip('0')
 
     severity_label = f"Severity {severity}" if severity != 'All' else "All Severity"
+    deficiency_type_label = f"Deficiency Type: {deficiency_type}" if deficiency_type else "All Deficiency Types"
 
     context = {
         'grouped_data': grouped_list,
@@ -476,6 +481,8 @@ def dr_report_pdf_view(request):
         'printed_time': printed_time,
         'site': site,
         'severity_label': severity_label,
+        'deficiency_type_label': deficiency_type_label,
+        'deficiency_type': deficiency_type,
         'total_count': len(deficiencies_list),
         'date_from': date_from,
         'date_to': date_to,
@@ -493,7 +500,8 @@ def dr_report_pdf_view(request):
     response = HttpResponse(pdf_value, content_type='application/pdf')
 
     if download == '1':
-        filename = f"DR_Report_{site}_{severity}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        type_part = f"_{deficiency_type}" if deficiency_type else ""
+        filename = f"DR_Report_{site}_{severity}{type_part}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
     else:
         response['Content-Disposition'] = 'inline; filename="dr_report.pdf"'
