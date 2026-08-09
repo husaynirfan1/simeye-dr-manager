@@ -44,7 +44,7 @@
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Status:</span>
-                            <span class="detail-value"><span class="badge status-{{ deficiency.status }}">{{ deficiency.status }}</span></span>
+                            <span class="detail-value"><span class="badge status-{{ deficiency.status|cut:' ' }}">{{ deficiency.status }}</span></span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Severity:</span>

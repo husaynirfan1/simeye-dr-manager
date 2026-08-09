@@ -73,7 +73,7 @@
                 {% for stat in status_counts %}
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="d-flex align-items-center">
-                        <span class="badge status-{{ stat.status|replace(' ', '') }} me-2">{{ stat.status }}</span>
+                        <span class="badge status-{{ stat.status|cut:' ' }} me-2">{{ stat.status }}</span>
                     </div>
                     <span class="badge bg-secondary">{{ stat.count }}</span>
                 </div>
@@ -158,7 +158,7 @@
                                 <em class="text-muted">No description</em>
                             {% endif %}
                         </td>
-                        <td><span class="badge status-{{ def.status|replace(' ', '') }}">{{ def.status }}</span></td>
+                        <td><span class="badge status-{{ def.status|cut:' ' }}">{{ def.status }}</span></td>
                         <td><span class="badge severity-{{ def.severity }}">{{ def.severity }}</span></td>
                         <td>{{ def.raisedbyname }}</td>
                         <td>

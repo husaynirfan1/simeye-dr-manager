@@ -17,7 +17,7 @@
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
             <h2 class="mb-0">Deficiency #{{ deficiency.deficiencynumber }}</h2>
-            <span class="badge status-{{ deficiency.status|replace(' ', '') }} fs-6">{{ deficiency.status }}</span>
+            <span class="badge status-{{ deficiency.status|cut:' ' }} fs-6">{{ deficiency.status }}</span>
             <span class="badge severity-{{ deficiency.severity }} fs-6">{{ deficiency.severity }}</span>
         </div>
         <p class="text-muted mb-0">{{ deficiency.sitename }} - {{ deficiency.resource }}</p>
@@ -202,7 +202,7 @@
             <div class="card-body">
                 <div class="detail-row">
                     <div class="detail-label">Current Status:</div>
-                    <div><span class="badge status-{{ deficiency.status|replace(' ', '') }} fs-6">{{ deficiency.status }}</span></div>
+                    <div><span class="badge status-{{ deficiency.status|cut:' ' }} fs-6">{{ deficiency.status }}</span></div>
                 </div>
                 {% if deficiency.clearedbyname %}
                 <div class="detail-row">
